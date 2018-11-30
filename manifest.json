@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "Facebook Don't Track Me",
+  "version": "1.0",
+  "description": "Strip Facebook track parameters and clarify url",
+  "icons": {
+    "64": "logo64.png"
+  },
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts":[
+    {
+      "matches": ["*://*.facebook.com/*"],
+      "js":["content.js"]
+    }
+  ],
+  "applications": {
+    "gecko": {
+      "id": "Facebook-Dont-Track-Me@flandre.tw"
+    }
+  }
+}
