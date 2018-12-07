@@ -1,5 +1,7 @@
 # Facebook Don't Track Me
 
+![logo](src/logo64.png)
+
 Strip Facebook track parameters and clarify url
 
 Modified from [nboughton/nofbclid](https://github.com/nboughton/nofbclid)
