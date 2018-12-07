@@ -1,10 +1,18 @@
-/**
- * Strip useless search parameters
- *
- * @param {String|URL} url
- * @returns {String} href
- */
-function clarifyURL(url) {
+/* eslint-disable no-unused-vars */
+
+function softClarifyURL(url) {
+  const useless = [
+    'fbclid', // 元兇
+  ];
+
+  const patterns = [
+    /^utm_/, // google analysis
+  ];
+
+  return clarifyURL(url, useless, patterns);
+}
+
+function hardClarifyURL(url) {
   const useless = [
     'eid',        // 動態的發文者/粉專使用者連結
     'ref',        // 左欄快捷連結
@@ -32,8 +40,6 @@ function clarifyURL(url) {
     /^utm_/, // google analysis
   ];
 
-  let u = new URL(url.toString());
-
   // No facebook redirect
   const isFacebookRedirect = (l) => {
     const u = new URL(l);
@@ -41,9 +47,22 @@ function clarifyURL(url) {
     return u.href === 'https://l.facebook.com/l.php';
   };
 
-  if (isFacebookRedirect(u)) {
-    u = new URL(u.searchParams.get('u'));
+  if (isFacebookRedirect(url)) {
+    const u = new URL(new URL(url).searchParams.get('u'));
+    return clarifyURL(u, useless, patterns);
   }
+
+  return clarifyURL(url, useless, patterns);
+}
+
+/**
+ * Strip useless search parameters
+ *
+ * @param {String|URL} url
+ * @returns {String} href
+ */
+function clarifyURL(url, useless, patterns) {
+  let u = new URL(url.toString());
 
   const badKeys = [];
 

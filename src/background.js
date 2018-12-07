@@ -1,47 +1,52 @@
-/* global clarifyURL */
+/* global softClarifyURL hardClarifyURL */
 
 function trackStrip(req) {
   // 1. Filter type
-  const ACCEPT_TYPE = ['main_frame', 'xmlhttprequest'];
-  if (!ACCEPT_TYPE.includes(req.type)) {
+  const ACCEPT_TYPES = ['main_frame', 'xmlhttprequest'];
+  if (!ACCEPT_TYPES.includes(req.type)) {
     return;
   }
 
   const url = new URL(req.url);
 
-  // 2. Case by case clarify URLs
+  const IGNORE_FB_HOSTS = [
+    'upload.facebook.com',
+    'fbcdn.net',
+    '-chat.facebook.com',
+  ];
+  // 2. Ignore specific hosts
+  if (IGNORE_FB_HOSTS.some((h) => url.hostname.endsWith(h))) {
+    return;
+  }
+
+  // 3. Clarify URLs
   if (url.hostname === 'www.facebook.com') {
-    if (
-      url.pathname.startsWith('/api') ||
-      url.pathname.startsWith('/ufi') ||
-      url.pathname.startsWith('/ajax') ||
-      url.pathname.startsWith('/chat') ||
-      url.pathname.startsWith('/pages_reaction_units') ||
-      url.pathname.startsWith('/groups/member_bio')) {
+    const IGNORE_FB_PATHES = [
+      '/api',
+      '/ufi',
+      '/ajax',
+      '/chat',
+      '/pages_reaction_units',
+      '/groups/member_bio',
+    ];
+
+    if (IGNORE_FB_PATHES.some((p) => url.pathname.startsWith(p))) {
       return;
     }
 
-    const good = clarifyURL(url);
-
-    console.info('case 1', req, good);
+    const good = hardClarifyURL(url);
 
     if (req.url !== good) {
+      console.info('case 1', req, good);
       return {
         redirectUrl: good,
       };
     }
-  } else if (url.hostname === 'upload.facebook.com') {
-    // ignore it!
-  } else if (url.hostname.endsWith('fbcdn.net')) {
-    // ignore it!
-  } else if (url.hostname.endsWith('-chat.facebook.com')) {
-    // ignore it!
   } else {
-    const good = clarifyURL(url);
-
-    console.info('Case 2', req, good);
+    const good = softClarifyURL(url);
 
     if (req.url !== good) {
+      console.info('Case 2', req, good);
       return {
         redirectUrl: good,
       };
@@ -63,7 +68,15 @@ chrome.contextMenus.create({
 // Chrome
 if (navigator.userAgent.includes('Chrome')) {
   chrome.contextMenus.onClicked.addListener((info) => {
-    const good = clarifyURL(info.linkUrl);
+    let good = null;
+    if (new URL(info.pageUrl).hostname.includes('facebook.com')) {
+      good = hardClarifyURL(info.linkUrl);
+    } else {
+      good = softClarifyURL(info.linkUrl);
+    }
+
+    console.info('copy-clean-url', info, good);
+
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
       chrome.tabs.sendMessage(tab.id, { type: 'clipboard-write', msg: good });
@@ -73,7 +86,15 @@ if (navigator.userAgent.includes('Chrome')) {
 // Firefox
 else if (navigator.userAgent.includes('Firefox')) {
   chrome.contextMenus.onClicked.addListener((info) => {
-    const good = clarifyURL(info.linkUrl);
+    let good = null;
+    if (new URL(info.pageUrl).hostname.includes('facebook.com')) {
+      good = hardClarifyURL(info.linkUrl);
+    } else {
+      good = softClarifyURL(info.linkUrl);
+    }
+
+    console.info('copy-clean-url', info, good);
+
     navigator.clipboard.writeText(good);
   });
 }

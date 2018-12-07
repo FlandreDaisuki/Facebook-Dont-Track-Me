@@ -1,4 +1,4 @@
-/* global clarifyURL */
+/* global hardClarifyURL */
 
 document.addEventListener('mousedown', (event) => {
   const ta = event.target.closest('a');
@@ -8,13 +8,13 @@ document.addEventListener('mousedown', (event) => {
   }
 
   if (isNeedClarifyA(ta)) {
-    const good = clarifyURL(ta.href);
+    const good = hardClarifyURL(ta.href);
     ta.href = good;
   }
 
   const ajaxify = ta.getAttribute('ajaxify');
   if (ajaxify) {
-    const good = clarifyURL(ajaxify);
+    const good = hardClarifyURL(ajaxify);
     ta.setAttribure('ajaxify', good);
   }
 });
