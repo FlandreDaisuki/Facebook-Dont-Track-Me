@@ -26,8 +26,10 @@ function trackStrip(req) {
       '/ufi',
       '/ajax',
       '/chat',
-      '/pages_reaction_units',
+      '/share/dialog',
       '/groups/member_bio',
+      '/pages/story/reader',
+      '/pages_reaction_units',
     ];
 
     if (IGNORE_FB_PATHES.some((p) => url.pathname.startsWith(p))) {
