@@ -25,7 +25,7 @@ In this version, clarify url in address bar but the tracking parameters are stil
 
 ![download zip](assets/download-zip.png)
 
-2. Open developer mode and load the project folder
+2. Open developer mode and load the **src/** in project folder
 
 ![load project](assets/load-project.png)
 
