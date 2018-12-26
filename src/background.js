@@ -1,4 +1,4 @@
-/* global softClarifyURL hardClarifyURL */
+/* global softClarifyURL hardClarifyURL betterLog */
 
 function trackStrip(req) {
   // 1. Filter type
@@ -26,10 +26,12 @@ function trackStrip(req) {
       '/ufi',
       '/ajax',
       '/chat',
+      '/saved',
       '/share/dialog',
       '/groups/member_bio',
       '/pages/story/reader',
       '/pages_reaction_units',
+      '/typeahead/search/facebar/bootload',
     ];
 
     if (IGNORE_FB_PATHES.some((p) => url.pathname.startsWith(p))) {
@@ -38,8 +40,9 @@ function trackStrip(req) {
 
     const good = hardClarifyURL(url);
 
-    if (req.url !== good) {
-      console.info('case 1', req, good);
+    if (url.href !== good) {
+      console.info('case 1', req);
+      betterLog(url.href, good);
       return {
         redirectUrl: good,
       };
@@ -47,8 +50,9 @@ function trackStrip(req) {
   } else {
     const good = softClarifyURL(url);
 
-    if (req.url !== good) {
-      console.info('Case 2', req, good);
+    if (url.href !== good) {
+      console.info('case 2', req);
+      betterLog(url.href, good);
       return {
         redirectUrl: good,
       };
@@ -77,7 +81,8 @@ if (navigator.userAgent.includes('Chrome')) {
       good = softClarifyURL(info.linkUrl);
     }
 
-    console.info('copy-clean-url', info, good);
+    console.info('copy-clean-url');
+    betterLog(info.linkUrl, good);
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
@@ -95,7 +100,8 @@ else if (navigator.userAgent.includes('Firefox')) {
       good = softClarifyURL(info.linkUrl);
     }
 
-    console.info('copy-clean-url', info, good);
+    console.info('copy-clean-url');
+    betterLog(info.linkUrl, good);
 
     navigator.clipboard.writeText(good);
   });

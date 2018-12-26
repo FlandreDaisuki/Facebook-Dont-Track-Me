@@ -55,6 +55,18 @@ function hardClarifyURL(url) {
   return clarifyURL(url, useless, patterns);
 }
 
+// Thanks this bug...
+// https://bugzilla.mozilla.org/show_bug.cgi?id=1508174
+function* keyIterator(searchParams) {
+  const itor = searchParams.keys();
+
+  while (1) {
+    const { done, value } = itor.next();
+    if (done) { return; }
+    yield value;
+  }
+}
+
 /**
  * Strip useless search parameters
  *
@@ -66,19 +78,7 @@ function clarifyURL(url, useless, patterns) {
 
   const badKeys = [];
 
-  // Thanks this bug...
-  // https://bugzilla.mozilla.org/show_bug.cgi?id=1508174
-  function* keyIterator() {
-    const itor = u.searchParams.keys();
-
-    while (1) {
-      const { done, value } = itor.next();
-      if (done) { return; }
-      yield value;
-    }
-  }
-
-  for (const key of keyIterator()) {
+  for (const key of keyIterator(u.searchParams)) {
     if (patterns.some((p) => key.match(p)) || useless.includes(key)) {
       badKeys.push(key);
     }
@@ -89,4 +89,33 @@ function clarifyURL(url, useless, patterns) {
   }
 
   return u.href;
+}
+
+function betterLog(bad, good) {
+  const [b, g] = [new URL(bad), new URL(good)];
+  const withoutSearch = ((url) => {
+    const u = new URL(url);
+    u.search = '';
+    return u.href;
+  })(g);
+
+  const left = [], striped = [];
+  const bks = new Set(keyIterator(b.searchParams));
+  const gks = new Set(keyIterator(g.searchParams));
+  for (const bk of bks) {
+    if (gks.has(bk)) {
+      left.push(bk);
+    } else {
+      striped.push(bk);
+    }
+  }
+
+  console.groupCollapsed(withoutSearch);
+
+  console.log('left:');
+  left.forEach((k) => console.log(`  ${k}`));
+  console.log('striped:');
+  striped.forEach((k) => console.log(`  ${k}`));
+
+  console.groupEnd(withoutSearch);
 }
