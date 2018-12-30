@@ -27,6 +27,7 @@ function trackStrip(req) {
       '/ajax',
       '/chat',
       '/saved',
+      '/video',
       '/share/dialog',
       '/groups/member_bio',
       '/pages/story/reader',
