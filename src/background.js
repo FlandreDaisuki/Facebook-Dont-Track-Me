@@ -26,11 +26,7 @@ function trackStrip(req) {
   // 3. Clarify URLs
   if (url.hostname === 'www.facebook.com') {
     const IGNORE_FB_PATHES = [
-      '/api',
-      '/ufi',
-      '/ajax',
-      '/chat',
-      '/video',
+      '/ajax/pagelet',
       '/groups/member_bio',
     ];
 
@@ -41,8 +37,10 @@ function trackStrip(req) {
     const good = hardClarifyURL(url);
 
     if (url.href !== good) {
+      console.info('case 1'); /*
       console.info('case 1', req);
       betterLog(url.href, good);
+      // */
       return {
         redirectUrl: good,
       };
@@ -51,8 +49,10 @@ function trackStrip(req) {
     const good = softClarifyURL(url);
 
     if (url.href !== good) {
+      console.info('case 2'); /*
       console.info('case 2', req);
       betterLog(url.href, good);
+      // */
       return {
         redirectUrl: good,
       };
