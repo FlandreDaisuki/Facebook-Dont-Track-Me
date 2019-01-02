@@ -2,7 +2,11 @@
 
 function trackStrip(req) {
   // 1. Filter type
-  const ACCEPT_TYPES = ['main_frame', 'xmlhttprequest'];
+  const ACCEPT_TYPES = [
+    'sub_frame',
+    'main_frame',
+    'xmlhttprequest',
+  ];
   if (!ACCEPT_TYPES.includes(req.type)) {
     return;
   }
@@ -10,9 +14,9 @@ function trackStrip(req) {
   const url = new URL(req.url);
 
   const IGNORE_FB_HOSTS = [
-    'upload.facebook.com',
     'fbcdn.net',
     '-chat.facebook.com',
+    'upload.facebook.com',
   ];
   // 2. Ignore specific hosts
   if (IGNORE_FB_HOSTS.some((h) => url.hostname.endsWith(h))) {

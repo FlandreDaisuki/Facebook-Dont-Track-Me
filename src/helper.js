@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-function softClarifyURL(url) {
+function softClarifyURL(_url) {
   const useless = [
     'fbclid', // 元兇
   ];
@@ -9,16 +9,14 @@ function softClarifyURL(url) {
     /^utm_/, // google analysis
   ];
 
-  return clarifyURL(url, useless, patterns);
+  return clarifyURL(_url, useless, patterns);
 }
 
-function hardClarifyURL(url) {
+function hardClarifyURL(_url) {
+  const url = softClarifyURL(_url);
+
   const useless = [
     'eid',        // 動態的發文者/粉專使用者連結
-    'ref',        // 左欄快捷連結
-    'fref',       // 不知道從哪來但跟動態有關
-    'cref',       // 不知道從哪來但跟動態有關
-    'source_ref', // 跟個人頁面有關
     'notif_id', // 右上角通知連結
     'notif_t',  // 右上角通知連結
     'dti',      // 不知道從來定位到個人頁面會出現
@@ -26,20 +24,18 @@ function hardClarifyURL(url) {
     'rc',      // 不知道從來定位到個人頁面會出現
     'comment_tracking', // 留言連結
     'tn-str',   // theater 模式的發文者連結
-    'fbclid', // 元兇
     'extragetparams',
     'lst', // 跟個人頁面有關
     'source', // 跟 hashtag 有關
     'epa', // 跟 hashtag 有關
-    'timeline_context_item_type', // 跟個人頁面經歷有關
-    'timeline_context_item_source', // 跟個人頁面經歷有關
   ];
 
   const patterns = [
-    /^__(?!a$)/,
     /^hc_/,
     /^ft\[/,
-    /^utm_/, // google analysis
+    /^\w*ref/,
+    /^__(?!a$)/,
+    /^timeline_context_item_/,
   ];
 
   // No facebook redirect
