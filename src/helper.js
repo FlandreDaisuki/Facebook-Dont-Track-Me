@@ -17,6 +17,7 @@ function hardClarifyURL(url) {
     'eid',        // 動態的發文者/粉專使用者連結
     'ref',        // 左欄快捷連結
     'fref',       // 不知道從哪來但跟動態有關
+    'cref',       // 不知道從哪來但跟動態有關
     'source_ref', // 跟個人頁面有關
     'notif_id', // 右上角通知連結
     'notif_t',  // 右上角通知連結

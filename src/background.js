@@ -26,9 +26,7 @@ function trackStrip(req) {
       '/ufi',
       '/ajax',
       '/chat',
-      '/saved',
       '/video',
-      '/share/dialog',
       '/groups/member_bio',
     ];
 
