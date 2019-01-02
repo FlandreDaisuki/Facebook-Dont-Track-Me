@@ -29,6 +29,7 @@ function trackStrip(req) {
       '/saved',
       '/video',
       '/share/dialog',
+      '/notes/reader',
       '/groups/member_bio',
       '/pages/story/reader',
       '/pages_reaction_units',
