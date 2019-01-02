@@ -35,8 +35,9 @@ function hardClarifyURL(url) {
   ];
 
   const patterns = [
-    /^_+/,
+    /^__(?!a$)/,
     /^hc_/,
+    /^ft\[/,
     /^utm_/, // google analysis
   ];
 

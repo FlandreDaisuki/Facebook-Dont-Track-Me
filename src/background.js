@@ -29,11 +29,7 @@ function trackStrip(req) {
       '/saved',
       '/video',
       '/share/dialog',
-      '/notes/reader',
       '/groups/member_bio',
-      '/pages/story/reader',
-      '/pages_reaction_units',
-      '/typeahead/search/facebar/bootload',
     ];
 
     if (IGNORE_FB_PATHES.some((p) => url.pathname.startsWith(p))) {
