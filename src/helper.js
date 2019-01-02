@@ -34,7 +34,7 @@ function hardClarifyURL(_url) {
     /^hc_/,
     /^ft\[/,
     /^\w*ref/,
-    /^__(?!a$)/,
+    /^__(?!a$|adt$)/,
     /^timeline_context_item_/,
   ];
 
