@@ -40,13 +40,13 @@ function hardClarifyURL(_url) {
 
   // No facebook redirect
   const isFacebookRedirect = (l) => {
-    const u = new URL(l);
+    const u = newURL(l);
     u.search = '';
     return u.href === 'https://l.facebook.com/l.php';
   };
 
   if (isFacebookRedirect(url)) {
-    const u = new URL(new URL(url).searchParams.get('u'));
+    const u = newURL(newURL(url).searchParams.get('u'));
     return softClarifyURL(u);
   }
 
@@ -72,7 +72,7 @@ function* keyIterator(searchParams) {
  * @returns {String} href
  */
 function clarifyURL(url, useless, patterns) {
-  let u = new URL(url.toString(), document.baseURI);
+  let u = newURL(url);
 
   const badKeys = [];
 
@@ -90,9 +90,9 @@ function clarifyURL(url, useless, patterns) {
 }
 
 function betterLog(bad, good) {
-  const [b, g] = [new URL(bad), new URL(good)];
+  const [b, g] = [newURL(bad), newURL(good)];
   const withoutSearch = ((url) => {
-    const u = new URL(url);
+    const u = newURL(url);
     u.search = '';
     return u.href;
   })(g);
@@ -116,4 +116,15 @@ function betterLog(bad, good) {
   striped.forEach((k) => console.log(`  ${k}`));
 
   console.groupEnd(withoutSearch);
+}
+
+/**
+ * New an URL object accepts cross browser href/url
+ *
+ * @param {String|URL} url
+ * @returns {URL} URLObject
+ */
+function newURL(url) {
+  const isBackground = document.baseURI.includes('extension://');
+  return isBackground ? new URL(url.toString()) : new URL(url.toString(), document.baseURI);
 }

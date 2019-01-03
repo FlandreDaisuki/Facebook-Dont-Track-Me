@@ -1,4 +1,4 @@
-/* global softClarifyURL hardClarifyURL betterLog */
+/* global softClarifyURL hardClarifyURL betterLog newURL */
 
 function trackStrip(req) {
   // 1. Filter type
@@ -11,7 +11,7 @@ function trackStrip(req) {
     return;
   }
 
-  const url = new URL(req.url);
+  const url = newURL(req.url);
 
   const IGNORE_FB_HOSTS = [
     'fbcdn.net',
@@ -76,7 +76,7 @@ chrome.contextMenus.create({
 if (navigator.userAgent.includes('Chrome')) {
   chrome.contextMenus.onClicked.addListener((info) => {
     let good = null;
-    if (new URL(info.pageUrl).hostname.includes('facebook.com')) {
+    if (newURL(info.pageUrl).hostname.includes('facebook.com')) {
       good = hardClarifyURL(info.linkUrl);
     } else {
       good = softClarifyURL(info.linkUrl);
@@ -95,7 +95,7 @@ if (navigator.userAgent.includes('Chrome')) {
 else if (navigator.userAgent.includes('Firefox')) {
   chrome.contextMenus.onClicked.addListener((info) => {
     let good = null;
-    if (new URL(info.pageUrl).hostname.includes('facebook.com')) {
+    if (newURL(info.pageUrl).hostname.includes('facebook.com')) {
       good = hardClarifyURL(info.linkUrl);
     } else {
       good = softClarifyURL(info.linkUrl);
@@ -107,5 +107,3 @@ else if (navigator.userAgent.includes('Firefox')) {
     navigator.clipboard.writeText(good);
   });
 }
-
-
