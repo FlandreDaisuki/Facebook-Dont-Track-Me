@@ -47,7 +47,7 @@ function hardClarifyURL(_url) {
 
   if (isFacebookRedirect(url)) {
     const u = new URL(new URL(url).searchParams.get('u'));
-    return clarifyURL(u, useless, patterns);
+    return softClarifyURL(u);
   }
 
   return clarifyURL(url, useless, patterns);
