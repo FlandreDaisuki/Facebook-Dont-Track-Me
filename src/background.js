@@ -26,6 +26,7 @@ function trackStrip(req) {
   // 3. Clarify URLs
   if (url.hostname === 'www.facebook.com') {
     const IGNORE_FB_PATHES = [
+      '/ajax/bz',
       '/ajax/pagelet',
       '/groups/member_bio',
     ];
