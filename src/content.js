@@ -7,26 +7,20 @@ document.addEventListener('mousedown', (event) => {
     return;
   }
 
-  if (isNeedClarifyA(ta)) {
+  const href = ta.getAttribute('href');
+  if (href) {
     const good = hardClarifyURL(ta.href);
+    // console.info('ta[href]', ta.href, '→', good);
     ta.href = good;
   }
 
   const ajaxify = ta.getAttribute('ajaxify');
   if (ajaxify) {
-    const good = hardClarifyURL(ajaxify);
-    ta.getAttribute('ajaxify', good);
+    const good = hardClarifyURL(ajaxify).replace(location.origin, '');
+    // console.info('ta[ajaxify]', ajaxify, '→', good);
+    ta.setAttribute('ajaxify', good);
   }
 });
-
-function isNeedClarifyA(el) {
-  return el.target !== '_blank' &&
-    !el.classList.contains('see_more_link') &&
-    el.getAttribute('role') !== 'button' &&
-    el.getAttribute('href') !== '#' &&
-    el.rel !== 'ignore' &&
-    el.rel !== 'theater';
-}
 
 // Chrome
 if (navigator.userAgent.includes('Chrome')) {
