@@ -15,7 +15,7 @@ document.addEventListener('mousedown', (event) => {
   const ajaxify = ta.getAttribute('ajaxify');
   if (ajaxify) {
     const good = hardClarifyURL(ajaxify);
-    ta.setAttribure('ajaxify', good);
+    ta.getAttribute('ajaxify', good);
   }
 });
 
