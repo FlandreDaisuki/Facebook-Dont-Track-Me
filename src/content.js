@@ -20,6 +20,13 @@ document.addEventListener('mousedown', (event) => {
     // console.info('ta[ajaxify]', ajaxify, '→', good);
     ta.setAttribute('ajaxify', good);
   }
+
+  const lynxUri = ta.dataset.lynxUri;
+  if (lynxUri) {
+    const good = hardClarifyURL(lynxUri);
+    // console.info('ta[data-lynx-uri]', lynxUri, '→', good);
+    ta.dataset.lynxUri = good;
+  }
 });
 
 // Chrome
