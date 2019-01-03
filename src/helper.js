@@ -72,7 +72,7 @@ function* keyIterator(searchParams) {
  * @returns {String} href
  */
 function clarifyURL(url, useless, patterns) {
-  let u = new URL(url.toString());
+  let u = new URL(url.toString(), document.baseURI);
 
   const badKeys = [];
 
