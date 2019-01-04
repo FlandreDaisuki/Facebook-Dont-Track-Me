@@ -8,7 +8,7 @@ document.addEventListener('mousedown', (event) => {
   }
 
   const href = ta.getAttribute('href');
-  if (href) {
+  if (href && href !== '#') {
     const good = hardClarifyURL(ta.href);
     // console.info('ta[href]', ta.href, '→', good);
     ta.href = good;
