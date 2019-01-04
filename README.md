@@ -4,7 +4,13 @@
 
 Strip Facebook track parameters and clarify url
 
-Modified from [nboughton/nofbclid](https://github.com/nboughton/nofbclid)
+Inspired by [nboughton/nofbclid](https://github.com/nboughton/nofbclid)
+
+## Examples
+
+![example1](assets/example1.png)
+
+![example2](assets/example2.png)
 
 ## Installation
 
