@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-function softClarifyURL(_url) {
+function softClarifyURL(_url, base) {
   const useless = [
     'fbclid', // 元兇
   ];
@@ -9,11 +9,11 @@ function softClarifyURL(_url) {
     /^utm_/, // google analysis
   ];
 
-  return clarifyURL(_url, useless, patterns);
+  return clarifyURL(_url, base, useless, patterns);
 }
 
-function hardClarifyURL(_url) {
-  const url = softClarifyURL(_url);
+function hardClarifyURL(_url, base) {
+  const url = softClarifyURL(_url, base);
 
   const useless = [
     'eid',        // 動態的發文者/粉專使用者連結
@@ -50,7 +50,7 @@ function hardClarifyURL(_url) {
     return softClarifyURL(u);
   }
 
-  return clarifyURL(url, useless, patterns);
+  return clarifyURL(url, base, useless, patterns);
 }
 
 // Thanks this bug...
@@ -71,8 +71,12 @@ function* keyIterator(searchParams) {
  * @param {String|URL} url
  * @returns {String} href
  */
-function clarifyURL(url, useless, patterns) {
-  let u = newURL(url);
+function clarifyURL(url, base, useless, patterns) {
+  let u = newURL(url, base);
+  if (u.href.includes('#') && !u.hash) {
+    // <a href="#">
+    return '#';
+  }
 
   const badKeys = [];
 
@@ -124,7 +128,10 @@ function betterLog(bad, good) {
  * @param {String|URL} url
  * @returns {URL} URLObject
  */
-function newURL(url) {
-  const isBackground = document.baseURI.includes('extension://');
-  return isBackground ? new URL(url.toString()) : new URL(url.toString(), document.baseURI);
+function newURL(url, base) {
+  try {
+    return new URL(url, base);
+  } catch (error) {
+    return new URL(url, document.baseURI);
+  }
 }

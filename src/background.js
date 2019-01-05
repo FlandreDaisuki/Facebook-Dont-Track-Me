@@ -76,14 +76,15 @@ chrome.contextMenus.create({
 if (navigator.userAgent.includes('Chrome')) {
   chrome.contextMenus.onClicked.addListener((info) => {
     let good = null;
+    const { linkUrl, pageUrl } = info;
     if (newURL(info.pageUrl).hostname.includes('facebook.com')) {
-      good = hardClarifyURL(info.linkUrl);
+      good = hardClarifyURL(linkUrl, pageUrl);
     } else {
-      good = softClarifyURL(info.linkUrl);
+      good = softClarifyURL(linkUrl, pageUrl);
     }
 
     console.info('copy-clean-url');
-    betterLog(info.linkUrl, good);
+    betterLog(linkUrl, good);
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
@@ -95,14 +96,15 @@ if (navigator.userAgent.includes('Chrome')) {
 else if (navigator.userAgent.includes('Firefox')) {
   chrome.contextMenus.onClicked.addListener((info) => {
     let good = null;
+    const { linkUrl, pageUrl } = info;
     if (newURL(info.pageUrl).hostname.includes('facebook.com')) {
-      good = hardClarifyURL(info.linkUrl);
+      good = hardClarifyURL(linkUrl, pageUrl);
     } else {
-      good = softClarifyURL(info.linkUrl);
+      good = softClarifyURL(linkUrl, pageUrl);
     }
 
     console.info('copy-clean-url');
-    betterLog(info.linkUrl, good);
+    betterLog(linkUrl, good);
 
     navigator.clipboard.writeText(good);
   });
