@@ -3,6 +3,7 @@
 function trackStrip(req) {
   // 1. Filter type
   const ACCEPT_TYPES = [
+    'beacon',
     'sub_frame',
     'main_frame',
     'xmlhttprequest',
@@ -25,10 +26,21 @@ function trackStrip(req) {
 
   // 3. Clarify URLs
   if (url.hostname === 'www.facebook.com') {
-    const IGNORE_FB_PATHES = [
+    const BLOCK_FB_PATHES = [
       '/ajax/bz',
-      '/ajax/pagelet',
-      '/groups/member_bio',
+    ];
+
+    if (BLOCK_FB_PATHES.some((p) => url.pathname.startsWith(p))) {
+      console.info('BLOCK_FB_PATHES'); /*
+      console.info('BLOCK_FB_PATHES', req);
+      betterLog(url.href, good);
+      // */
+      return { cancel: true };
+    }
+
+    const IGNORE_FB_PATHES = [
+      '/ajax/pagelet', // subpage reaction
+      '/groups/member_bio', // subpage reaction
     ];
 
     if (IGNORE_FB_PATHES.some((p) => url.pathname.startsWith(p))) {
@@ -38,8 +50,8 @@ function trackStrip(req) {
     const good = hardClarifyURL(url);
 
     if (url.href !== good) {
-      console.info('case 1'); /*
-      console.info('case 1', req);
+      console.info('IN_FB_REQ'); /*
+      console.info('IN_FB_REQ', req);
       betterLog(url.href, good);
       // */
       return {
@@ -50,8 +62,8 @@ function trackStrip(req) {
     const good = softClarifyURL(url);
 
     if (url.href !== good) {
-      console.info('case 2'); /*
-      console.info('case 2', req);
+      console.info('OUT_FB_REQ'); /*
+      console.info('OUT_FB_REQ', req);
       betterLog(url.href, good);
       // */
       return {
@@ -83,7 +95,7 @@ if (navigator.userAgent.includes('Chrome')) {
       good = softClarifyURL(linkUrl, pageUrl);
     }
 
-    console.info('copy-clean-url');
+    console.info('COPY_URL');
     betterLog(linkUrl, good);
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -103,7 +115,7 @@ else if (navigator.userAgent.includes('Firefox')) {
       good = softClarifyURL(linkUrl, pageUrl);
     }
 
-    console.info('copy-clean-url');
+    console.info('COPY_URL');
     betterLog(linkUrl, good);
 
     navigator.clipboard.writeText(good);
