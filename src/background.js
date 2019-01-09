@@ -41,6 +41,7 @@ function trackStrip(req) {
     const IGNORE_FB_PATHES = [
       '/ajax/pagelet', // subpage reaction
       '/groups/member_bio', // subpage reaction
+      '/messaging/save_thread_emoji', // ?source will break the function
     ];
 
     if (IGNORE_FB_PATHES.some((p) => url.pathname.startsWith(p))) {
