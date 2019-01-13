@@ -26,7 +26,6 @@ function hardClarifyURL(_url, base) {
     'tn-str',   // theater 模式的發文者連結
     'extragetparams',
     'lst', // 跟個人頁面有關
-    'source', // 跟 hashtag 有關
     'epa', // 跟 hashtag 有關
   ];
 
