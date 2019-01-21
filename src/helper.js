@@ -1,61 +1,40 @@
 /* eslint-disable no-unused-vars */
 
-function softClarifyURL(_url, base) {
-  const useless = [
-    'fbclid', // 元兇
-  ];
+const DEBUG_MODE = false;
 
-  const patterns = [
-    /^utm_/, // google analysis
-  ];
+const SOFT_USELESS = [
+  'fbclid', // 元兇
+];
 
-  return clarifyURL(_url, base, useless, patterns);
-}
+const SOFT_PATTERNS = [
+  /^utm_/, // google analysis
+];
 
-function hardClarifyURL(_url, base) {
-  const url = softClarifyURL(_url, base);
+const HARD_USELESS = [
+  'eid',        // 動態的發文者/粉專使用者連結
+  'dti',      // 不知道從來定位到個人頁面會出現
+  'dpr',      // 不知道從來定位到個人頁面會出現
+  'rc',      // 不知道從來定位到個人頁面會出現
+  'comment_tracking', // 留言連結
+  'tn-str',   // theater 模式的發文者連結
+  'extragetparams',
+  'lst', // 跟個人頁面有關
+  'epa', // 跟 hashtag 有關
+];
 
-  const useless = [
-    'eid',        // 動態的發文者/粉專使用者連結
-    'notif_id', // 右上角通知連結
-    'notif_t',  // 右上角通知連結
-    'dti',      // 不知道從來定位到個人頁面會出現
-    'dpr',      // 不知道從來定位到個人頁面會出現
-    'rc',      // 不知道從來定位到個人頁面會出現
-    'comment_tracking', // 留言連結
-    'tn-str',   // theater 模式的發文者連結
-    'extragetparams',
-    'lst', // 跟個人頁面有關
-    'epa', // 跟 hashtag 有關
-  ];
-
-  const patterns = [
-    /^hc_/,
-    /^ft\[/,
-    /^\w*ref/,
-    /^__(?!a$|adt$)/,
-    /^timeline_context_item_/,
-  ];
-
-  // No facebook redirect
-  const isFacebookRedirect = (l) => {
-    const u = newURL(l);
-    u.search = '';
-    return u.href === 'https://l.facebook.com/l.php';
-  };
-
-  if (isFacebookRedirect(url)) {
-    const u = newURL(newURL(url).searchParams.get('u'));
-    return softClarifyURL(u);
-  }
-
-  return clarifyURL(url, base, useless, patterns);
-}
+const HARD_PATTERNS = [
+  /^hc_/,
+  /^ft\[/,
+  /^\w*ref/,
+  /^notif_/,
+  /^__(?!a$|adt$)/,
+  /^timeline_context_item_/,
+];
 
 // Thanks this bug...
 // https://bugzilla.mozilla.org/show_bug.cgi?id=1508174
-function* keyIterator(searchParams) {
-  const itor = searchParams.keys();
+function* keyIterator(obj) {
+  const itor = obj.keys ? obj.keys() : Object.keys(obj)[Symbol.iterator]();
 
   while (1) {
     const { done, value } = itor.next();
@@ -64,61 +43,12 @@ function* keyIterator(searchParams) {
   }
 }
 
-/**
- * Strip useless search parameters
- *
- * @param {String|URL} url
- * @returns {String} href
- */
-function clarifyURL(url, base, useless, patterns) {
-  let u = newURL(url, base);
-  if (u.href.includes('#') && !u.hash) {
-    // <a href="#">
-    return '#';
+function Objectify(obj) {
+  const o = {};
+  for (const k of keyIterator(obj)) {
+    o[k] = obj.get ? obj.get(k) : obj[k];
   }
-
-  const badKeys = [];
-
-  for (const key of keyIterator(u.searchParams)) {
-    if (patterns.some((p) => key.match(p)) || useless.includes(key)) {
-      badKeys.push(key);
-    }
-  }
-
-  for (const key of badKeys) {
-    u.searchParams.delete(key);
-  }
-
-  return u.href;
-}
-
-function betterLog(bad, good) {
-  const [b, g] = [newURL(bad), newURL(good)];
-  const withoutSearch = ((url) => {
-    const u = newURL(url);
-    u.search = '';
-    return u.href;
-  })(g);
-
-  const left = [], striped = [];
-  const bks = new Set(keyIterator(b.searchParams));
-  const gks = new Set(keyIterator(g.searchParams));
-  for (const bk of bks) {
-    if (gks.has(bk)) {
-      left.push(bk);
-    } else {
-      striped.push(bk);
-    }
-  }
-
-  console.groupCollapsed(withoutSearch);
-
-  console.log('left:');
-  left.forEach((k) => console.log(`  ${k}`));
-  console.log('striped:');
-  striped.forEach((k) => console.log(`  ${k}`));
-
-  console.groupEnd(withoutSearch);
+  return o;
 }
 
 /**
@@ -134,3 +64,137 @@ function newURL(url, base) {
     return new URL(url, document.baseURI);
   }
 }
+
+function diffObjectKeys(_ref, _cmp) {
+  const ref = Objectify(_ref), cmp = Objectify(_cmp);
+  const both = new Set(), added = new Set(), striped = new Set();
+  const keys = new Set([...keyIterator(ref), ...keyIterator(cmp)]);
+  for (const key of keys) {
+    if (key in ref && key in cmp) {
+      both.add(key);
+    } else if (!(key in ref) && key in cmp) {
+      added.add(key);
+    } else {
+      striped.add(key);
+    }
+  }
+
+  return {
+    both: [...both],
+    added: [...added],
+    striped: [...striped],
+  };
+}
+
+function softClarifyURL(_url, base) {
+  return clarifyURL(_url, base);
+}
+
+function hardClarifyURL(_url, base) {
+
+  // No facebook redirect
+  const isFacebookRedirect = (l) => {
+    const u = newURL(l);
+    u.search = '';
+    return u.href === 'https://l.facebook.com/l.php';
+  };
+
+  if (isFacebookRedirect(_url)) {
+    const u = newURL(newURL(_url).searchParams.get('u'));
+    return softClarifyURL(u, base);
+  }
+
+  return clarifyURL(_url, base, { hard: true });
+}
+
+/**
+ * Strip useless search parameters
+ *
+ * @param {String|URL} url
+ * @returns {String} href
+ */
+function clarifyURL(url, base, options = {}) {
+  let u = newURL(url, base);
+  if (u.href.includes('#') && !u.hash) {
+    // <a href="#">
+    return '#';
+  }
+
+  const good = clarifyObject(u.searchParams, options);
+  const badKeys = [];
+  for (const key of keyIterator(u.searchParams)) {
+    if (!(key in good)) {
+      badKeys.push(key);
+    }
+  }
+
+  for (const key of badKeys) {
+    u.searchParams.delete(key);
+  }
+
+  return u.href;
+}
+
+function clarifyObject(bad, options) {
+  const useless = SOFT_USELESS.slice();
+  const patterns = SOFT_PATTERNS.slice();
+
+  if (options.hard) {
+    useless.push(...HARD_USELESS);
+    patterns.push(...HARD_PATTERNS);
+  }
+
+  const good = Objectify(bad);
+
+  for (const key of keyIterator(bad)) {
+    if (patterns.some((p) => p.test(key)) || useless.includes(key)) {
+      delete good[key];
+    }
+  }
+
+  return good;
+}
+
+function log$Object(bad, good, title = 'Object') {
+  if (!DEBUG_MODE) { return; }
+
+  const { both, striped, added } = diffObjectKeys(bad, good);
+
+  console.groupCollapsed(title);
+
+  console.log('lefted:');
+  both.forEach((k) => console.log(`  ${k}`));
+
+  console.log('striped:');
+  striped.forEach((k) => console.log(`  ${k}`));
+
+  console.log('added:');
+  added.forEach((k) => console.log(`  ${k}`));
+
+  console.groupEnd(title);
+}
+
+function log$URL(bad, good, title = '') {
+  if (!DEBUG_MODE) { return; }
+
+  const [b, g] = [newURL(bad), newURL(good)];
+  const groupName = title || ((url) => {
+    const u = newURL(url);
+    u.search = '';
+    return u.href;
+  })(g);
+
+  const { both, striped } = diffObjectKeys(b.searchParams, g.searchParams);
+
+  console.groupCollapsed(groupName);
+
+  console.log('lefted:');
+  both.forEach((k) => console.log(`  ${k}`));
+
+  console.log('striped:');
+  striped.forEach((k) => console.log(`  ${k}`));
+
+  console.groupEnd(groupName);
+}
+
+

@@ -1,4 +1,4 @@
-/* global hardClarifyURL */
+/* global hardClarifyURL log$URL */
 
 if (location.hostname.includes('facebook.com')) {
   document.addEventListener('mousedown', (event) => {
@@ -11,21 +11,21 @@ if (location.hostname.includes('facebook.com')) {
     const href = ta.getAttribute('href');
     if (href) {
       const good = hardClarifyURL(ta.href);
-      // console.info('ta[href]', ta.href, '→', good);
+      log$URL(ta.href, good, 'ta[href]');
       ta.href = good;
     }
 
     const ajaxify = ta.getAttribute('ajaxify');
     if (ajaxify) {
       const good = hardClarifyURL(ajaxify).replace(location.origin, '');
-      // console.info('ta[ajaxify]', ajaxify, '→', good);
+      log$URL(ajaxify, good, 'ta[ajaxify]');
       ta.setAttribute('ajaxify', good);
     }
 
     const lynxUri = ta.dataset.lynxUri;
     if (lynxUri) {
       const good = hardClarifyURL(lynxUri);
-      // console.info('ta[data-lynx-uri]', lynxUri, '→', good);
+      log$URL(lynxUri, good, 'ta[data-lynx-uri]');
       ta.dataset.lynxUri = good;
     }
   });

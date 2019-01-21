@@ -1,4 +1,12 @@
-/* global softClarifyURL hardClarifyURL betterLog newURL */
+/* global softClarifyURL hardClarifyURL clarifyObject log$URL log$Object newURL DEBUG_MODE */
+
+const log$$ = (...args) => {
+  if (DEBUG_MODE) {
+    console.log(...args);
+  } else {
+    console.log(args[0]);
+  }
+};
 
 function trackStrip(req) {
   // 1. Filter type
@@ -26,16 +34,15 @@ function trackStrip(req) {
 
   // 3. Clarify URLs
   if (url.hostname === 'www.facebook.com') {
-    const BLOCK_FB_PATHES = [
-      '/ajax/bz',
-    ];
+    if (req.method === 'POST') {
+      // mainly filter /ajax/bz
+      if (req.requestBody.formData) {
+        const formData = req.requestBody.formData;
+        req.requestBody.formData = clarifyObject(req.requestBody.formData, { hard: true });
 
-    if (BLOCK_FB_PATHES.some((p) => url.pathname.startsWith(p))) {
-      console.info('BLOCK_FB_PATHES'); /*
-      console.info('BLOCK_FB_PATHES', req);
-      betterLog(url.href, good);
-      // */
-      return { cancel: true };
+        log$$('POST', req.url);
+        log$Object(formData, req.requestBody.formData, `The formData of ${req.url}`);
+      }
     }
 
     const IGNORE_FB_PATHES = [
@@ -50,10 +57,10 @@ function trackStrip(req) {
     const good = hardClarifyURL(url);
 
     if (url.href !== good) {
-      console.info('IN_FB_REQ'); /*
-      console.info('IN_FB_REQ', req);
-      betterLog(url.href, good);
-      // */
+
+      log$$('IN_FB_REQ', req);
+      log$URL(url.href, good);
+
       return {
         redirectUrl: good,
       };
@@ -62,10 +69,10 @@ function trackStrip(req) {
     const good = softClarifyURL(url);
 
     if (url.href !== good) {
-      console.info('OUT_FB_REQ'); /*
-      console.info('OUT_FB_REQ', req);
-      betterLog(url.href, good);
-      // */
+
+      log$$('OUT_FB_REQ', req);
+      log$URL(url.href, good);
+
       return {
         redirectUrl: good,
       };
@@ -76,7 +83,7 @@ function trackStrip(req) {
 chrome.webRequest.onBeforeRequest.addListener(
   trackStrip,
   { urls: ['<all_urls>'] },
-  ['blocking']
+  ['blocking', 'requestBody']
 );
 
 chrome.contextMenus.create({
@@ -95,8 +102,8 @@ if (navigator.userAgent.includes('Chrome')) {
       good = softClarifyURL(linkUrl, pageUrl);
     }
 
-    console.info('COPY_URL');
-    betterLog(linkUrl, good);
+    log$$('COPY_URL');
+    log$URL(linkUrl, good);
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
@@ -115,8 +122,8 @@ else if (navigator.userAgent.includes('Firefox')) {
       good = softClarifyURL(linkUrl, pageUrl);
     }
 
-    console.info('COPY_URL');
-    betterLog(linkUrl, good);
+    log$$('COPY_URL');
+    log$URL(linkUrl, good);
 
     navigator.clipboard.writeText(good);
   });
