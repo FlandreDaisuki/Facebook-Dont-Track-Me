@@ -7,23 +7,15 @@ Strip Facebook track parameters and clarify url
 Inspired by [nboughton/nofbclid](https://github.com/nboughton/nofbclid)
 
 ## Examples
-
-![example1](assets/example1.png)
-
-![example2](assets/example2.png)
+|An example of internal link in Facebook|An example of external link in Facebook|
+|:-:|:-:|
+|![An example of internal link in Facebook](assets/example1.png)|![An example of external link in Facebook](assets/example2.png)|
 
 ## Installation
 
-### Userscript version
-
-In this version, clarify url in address bar but the tracking parameters are still in requests.
-
-1. After install script managers (Tampermonkey, ...) and click [![Install-userscript-brightgreen](assets/Install-userscript-brightgreen.svg)](https://github.com/FlandreDaisuki/Facebook-Dont-Track-Me/raw/master/Facebook-Dont-Track-Me.user.js)
-
 ### Firefox
 
-1. Go [latest release](https://github.com/FlandreDaisuki/Facebook-Dont-Track-Me/releases/latest) and download xpi
-2. Drag xpi into firefox to install it
+[![firefox-addons-badge](assets/firefox-addons-badge58.png)](https://addons.mozilla.org/zh-TW/firefox/addon/facebook-dont-track-me/)
 
 ### Chromium-based
 
@@ -35,6 +27,14 @@ In this version, clarify url in address bar but the tracking parameters are stil
 
 ![load project](assets/load-project.png)
 
+### Userscript (lite)
+
+The userscript release can clarify url in address bar but the tracking parameters are still in requests.
+
+1. After install script managers (Tampermonkey, ...) and click [![Install-userscript-brightgreen](assets/Install-userscript-brightgreen.svg)](https://github.com/FlandreDaisuki/Facebook-Dont-Track-Me/raw/master/Facebook-Dont-Track-Me.user.js)
+
 ## LICENSE
 
-MIT
+The MIT License
+
+Copyright (c) 2019 FlandreDaisuki \<vbnm123c@gmail.com>
