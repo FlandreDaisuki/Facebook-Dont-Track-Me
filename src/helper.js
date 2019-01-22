@@ -196,5 +196,3 @@ function log$URL(bad, good, title = '') {
 
   console.groupEnd(groupName);
 }
-
-
