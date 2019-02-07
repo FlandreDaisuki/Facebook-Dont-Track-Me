@@ -241,7 +241,7 @@ if (location.hostname.includes('facebook.com')) {
 
 document.addEventListener('readystatechange', () => {
   const sp = new URLSearchParams(location.hash);
-  const options = location.hostname.includes('facebook.com') ? { hard: true } : null;
+  const options = location.hostname.includes('facebook.com') ? { hard: true } : {};
   const goodSearch = new URLSearchParams(clarifyObject(sp, options)).toString();
   const goodURL = newURL(location.href);
   goodURL.search = goodSearch;
