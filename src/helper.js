@@ -7,7 +7,9 @@ const SOFT_USELESS = [
 ];
 
 const SOFT_PATTERNS = [
-  /^utm_/, // google analysis
+  /^utm_/,       // google analysis
+  /^guce_/,      // yahoo advertising
+  /^guccounter/, // yahoo advertising
 ];
 
 const HARD_USELESS = [
