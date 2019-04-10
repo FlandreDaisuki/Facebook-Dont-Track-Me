@@ -12,6 +12,8 @@ const SOFT_PATTERNS = [
   /^guccounter/, // yahoo advertising
 ];
 
+const SOFT_USEFUL = [];
+
 const HARD_USELESS = [
   'eid',        // 動態的發文者/粉專使用者連結
   'dti',      // 不知道從來定位到個人頁面會出現
@@ -25,12 +27,18 @@ const HARD_USELESS = [
 ];
 
 const HARD_PATTERNS = [
+  /^__/,
   /^hc_/,
   /^ft\[/,
-  /^\w*ref/,
+  /^\w+ref/,
   /^notif_/,
-  /^__(?!a$|adt$)/,
   /^timeline_context_item_/,
+];
+
+const HARD_USEFUL = [
+  '__a',
+  '__adt',
+  'ref_type',
 ];
 
 // Thanks this bug...
@@ -140,16 +148,18 @@ function clarifyURL(url, base, options = {}) {
 function clarifyObject(bad, options) {
   const useless = SOFT_USELESS.slice();
   const patterns = SOFT_PATTERNS.slice();
+  const useful = SOFT_USEFUL.slice();
 
   if (options.hard) {
     useless.push(...HARD_USELESS);
     patterns.push(...HARD_PATTERNS);
+    useful.push(...HARD_USEFUL);
   }
 
   const good = Objectify(bad);
 
   for (const key of keyIterator(bad)) {
-    if (patterns.some((p) => p.test(key)) || useless.includes(key)) {
+    if (!useful.includes(key) && patterns.some((p) => p.test(key)) || useless.includes(key)) {
       delete good[key];
     }
   }
