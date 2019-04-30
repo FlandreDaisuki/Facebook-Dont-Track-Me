@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Facebook Don't Track Me",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Strip Facebook track parameters and clarify url",
   "default_locale": "en",
   "icons": {
@@ -18,10 +18,10 @@
   "background": {
     "scripts": ["helper.js", "background.js"]
   },
-  "content_scripts":[
+  "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js":["helper.js", "content.js"]
+      "js": ["helper.js", "content.js"]
     }
   ],
   "applications": {

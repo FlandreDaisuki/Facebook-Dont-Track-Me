@@ -31,6 +31,16 @@ if (location.hostname.includes('facebook.com')) {
   });
 }
 
+/* global newURL clarifyObject */
+document.addEventListener('readystatechange', () => {
+  const sp = new URLSearchParams(location.search);
+  const options = location.hostname.includes('facebook.com') ? { hard: true } : {};
+  const goodSearch = new URLSearchParams(clarifyObject(sp, options)).toString();
+  const goodURL = newURL(location.href);
+  goodURL.search = goodSearch;
+  history.replaceState(history.state, document.title, goodURL);
+});
+
 // Chrome
 if (navigator.userAgent.includes('Chrome')) {
   chrome.runtime.onMessage.addListener((info) => {

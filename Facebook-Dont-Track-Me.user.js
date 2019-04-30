@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Facebook-Dont-Track-Me
 // @namespace    https://github.com/FlandreDaisuki
-// @version      1.5.2
+// @version      1.5.3
 // @description  Strip Facebook track parameters and clarify url
 // @description:zh-TW 移除 Facebook 追蹤參數及淨化網址欄
 // @author       FlandreDaisuki
@@ -257,5 +257,5 @@ document.addEventListener('readystatechange', () => {
   const goodSearch = new URLSearchParams(clarifyObject(sp, options)).toString();
   const goodURL = newURL(location.href);
   goodURL.search = goodSearch;
-  history.replaceState(null, document.title, goodURL);
+  history.replaceState(history.state, document.title, goodURL);
 });

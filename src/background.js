@@ -85,21 +85,6 @@ chrome.webRequest.onBeforeRequest.addListener(
   ['blocking', 'requestBody']
 );
 
-function tabLinkStrip(tab) {
-  const good = softClarifyURL(tab.url);
-  log$$('tabLinkStrip', tab);
-  if (tab.url !== good) {
-    log$$('good:', good, 'bad:', tab.url);
-    chrome.tabs.update(tab.id, { url: good });
-  }
-}
-
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'loading' && changeInfo.url) {
-    tabLinkStrip(tab);
-  }
-});
-
 chrome.contextMenus.create({
   title: chrome.i18n.getMessage('CopyCleanUrl'),
   contexts: ['link'],
