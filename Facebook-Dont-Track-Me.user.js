@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         Facebook-Dont-Track-Me
 // @namespace    https://github.com/FlandreDaisuki
-// @version      1.5.3
+// @version      1.5.4
 // @description  Strip Facebook track parameters and clarify url
 // @description:zh-TW 移除 Facebook 追蹤參數及淨化網址欄
 // @author       FlandreDaisuki
 // @include      *
+// @run-at       document-start
 // @grant        none
 // @noframes
 // ==/UserScript==
