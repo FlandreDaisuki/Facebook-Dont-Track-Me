@@ -36,15 +36,15 @@ The userscript release can clarify url in address bar but the tracking parameter
 
 ## Work with Other Extensions
 
-* [Privacy Badger _by EFF Technologists_](https://addons.mozilla.org/firefox/addon/privacy-badger17/)
+* [**Privacy Badger** _by EFF Technologists_](https://addons.mozilla.org/firefox/addon/privacy-badger17/)
 
   They canceled `mousedown` event that I need, you can disable **Privacy Badger** in Facebook only
 
-* [Facebook Container _by Mozilla_](https://addons.mozilla.org/firefox/addon/facebook-container/)
+* [**Facebook Container** _by Mozilla_](https://addons.mozilla.org/firefox/addon/facebook-container/)
 
   Work well together
 
-* [uBlock Origin _by Raymond Hill_](https://addons.mozilla.org/firefox/addon/ublock-origin/)
+* [**uBlock Origin** _by Raymond Hill_](https://addons.mozilla.org/firefox/addon/ublock-origin/)
 
   Work well together
 
