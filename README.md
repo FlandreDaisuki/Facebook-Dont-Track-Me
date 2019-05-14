@@ -4,7 +4,18 @@
 
 Strip Facebook track parameters and clarify url
 
-Inspired by [nboughton/nofbclid](https://github.com/nboughton/nofbclid)
+[[English](./README.md)] - [[正體中文](./README_zh-TW.md)]
+
+- [Examples](#examples)
+- [Installation](#installation)
+  - [Firefox](#firefox)
+  - [Chromium-based](#chromium-based)
+  - [Userscript (lite)](#userscript-lite)
+- [Permission Explanation](#permission-explanation)
+  - [tabs / contextMenus / clipboardWrite](#tabs--contextmenus--clipboardwrite)
+  - [webRequest / webRequestBlocking / \<all_urls>](#webrequest--webrequestblocking--all_urls)
+- [Work with Other Extensions](#work-with-other-extensions)
+- [LICENSE](#license)
 
 ## Examples
 
@@ -33,6 +44,22 @@ Inspired by [nboughton/nofbclid](https://github.com/nboughton/nofbclid)
 The userscript release can clarify url in address bar but the tracking parameters are still in requests.
 
 1. After install script managers (Tampermonkey, ...) and click [![Install-userscript-brightgreen](assets/Install-userscript-brightgreen.svg)](https://github.com/FlandreDaisuki/Facebook-Dont-Track-Me/raw/master/Facebook-Dont-Track-Me.user.js)
+
+## Permission Explanation
+
+### tabs / contextMenus / clipboardWrite
+
+These permissions are for the implementation of right click and copy the clarified link.
+
+When click that function, the link will send to background and process it, then send back clarified URL to the tab you click and replace your clipboard content.
+
+### webRequest / webRequestBlocking / \<all_urls>
+
+The reason I use `<all_urls>` instead of Facebook's domain is the tracking parameter, like `fbclid`, are spread all over Facebook and non Facebook sites.
+
+I don't want to send other sites these tracking parameters from non Facebook sites to other non Facebook sites.
+
+The `webRequest` and `webRequestBlocking` can let me filter and clarify all requests.
 
 ## Work with Other Extensions
 
