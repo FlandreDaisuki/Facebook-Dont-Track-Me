@@ -1,4 +1,4 @@
-/* global createURL, cleanObject, $Console, getBaseURI, cleanURL */
+/* global createUrl, cleanObject, $Console, getBaseURI, cleanUrl */
 
 const $console = new $Console();
 
@@ -14,7 +14,7 @@ function trackStrip(req) {
     return;
   }
 
-  const url = createURL(req.url);
+  const url = createUrl(req.url);
 
   const IGNORE_FB_HOSTS = [
     'fbcdn.net',
@@ -54,12 +54,12 @@ function trackStrip(req) {
       return;
     }
 
-    const cleaned = cleanURL(url, getBaseURI(url), { hard: true });
+    const cleaned = cleanUrl(url, getBaseURI(url), { hard: true });
 
     if (url.href !== cleaned) {
 
-      const bad = createURL(url).searchParams;
-      const good = createURL(cleaned).searchParams;
+      const bad = createUrl(url).searchParams;
+      const good = createUrl(cleaned).searchParams;
 
       $console.diff(`💩 ${getBaseURI(url)}`, bad, good);
 
@@ -68,12 +68,12 @@ function trackStrip(req) {
       };
     }
   } else {
-    const cleaned = cleanURL(url, getBaseURI(url));
+    const cleaned = cleanUrl(url, getBaseURI(url));
 
     if (url.href !== cleaned) {
 
-      const bad = createURL(url).searchParams;
-      const good = createURL(cleaned).searchParams;
+      const bad = createUrl(url).searchParams;
+      const good = createUrl(cleaned).searchParams;
 
       $console.diff(`🛰 ${getBaseURI(url)}`, bad, good);
 
@@ -91,7 +91,7 @@ chrome.webRequest.onBeforeRequest.addListener(
 );
 
 chrome.contextMenus.create({
-  title: chrome.i18n.getMessage('CopyCleanUrl'),
+  title: chrome.i18n.getMessage('CopyCleanedUrl'),
   contexts: ['link'],
 });
 
@@ -100,14 +100,14 @@ if (navigator.userAgent.includes('Chrome')) {
   chrome.contextMenus.onClicked.addListener((info) => {
     let cleaned = null;
     const { linkUrl, pageUrl } = info;
-    if (createURL(info.pageUrl).hostname.includes('facebook.com')) {
-      cleaned = cleanURL(linkUrl, pageUrl, { hard: true });
+    if (createUrl(pageUrl).hostname.includes('facebook.com')) {
+      cleaned = cleanUrl(linkUrl, pageUrl, { hard: true });
     } else {
-      cleaned = cleanURL(linkUrl, pageUrl);
+      cleaned = cleanUrl(linkUrl, pageUrl);
     }
 
-    const bad = createURL(linkUrl).searchParams;
-    const good = createURL(cleaned).searchParams;
+    const bad = createUrl(linkUrl).searchParams;
+    const good = createUrl(cleaned).searchParams;
 
     $console.diff(`📋 ${getBaseURI(linkUrl)}`, bad, good);
 
@@ -122,14 +122,14 @@ else if (navigator.userAgent.includes('Firefox')) {
   chrome.contextMenus.onClicked.addListener((info) => {
     let cleaned = null;
     const { linkUrl, pageUrl } = info;
-    if (createURL(info.pageUrl).hostname.includes('facebook.com')) {
-      cleaned = cleanURL(linkUrl, pageUrl, { hard: true });
+    if (createUrl(info.pageUrl).hostname.includes('facebook.com')) {
+      cleaned = cleanUrl(linkUrl, pageUrl, { hard: true });
     } else {
-      cleaned = cleanURL(linkUrl, pageUrl);
+      cleaned = cleanUrl(linkUrl, pageUrl);
     }
 
-    const bad = createURL(linkUrl).searchParams;
-    const good = createURL(cleaned).searchParams;
+    const bad = createUrl(linkUrl).searchParams;
+    const good = createUrl(cleaned).searchParams;
 
     $console.diff(`📋 ${getBaseURI(linkUrl)}`, bad, good);
 

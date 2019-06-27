@@ -220,7 +220,7 @@ const RULE = new Rule();
  * @param {String|URL} url
  * @returns {URL} URLObject
  */
-const createURL = (url, base) => {
+const createUrl = (url, base) => {
   try {
     return new URL(url, base);
   } catch (error) {
@@ -267,7 +267,7 @@ const cleanObject = (bad, options = {}) => {
  * @param {{hard?: Boolean}} options
  * @returns {{bad: URLSearchParams, good: URLSearchParams}} BadGood
  */
-const cleanURLSearchParams = (bad, options = {}) => {
+const cleanUrlSearchParams = (bad, options = {}) => {
   const _bad = Object.fromEntries(bad.entries());
   const _good = cleanObject(_bad, options).good;
   const good = new URLSearchParams(_good);
@@ -282,18 +282,18 @@ const cleanURLSearchParams = (bad, options = {}) => {
  * @param {{hard?: Boolean}} options
  * @returns {{bad: URL, good: URL}} BadGood
  */
-const _cleanURL = (url, base, options = {}) => {
-  const good = createURL(url, base);
+const _cleanUrl = (url, base, options = {}) => {
+  const good = createUrl(url, base);
 
-  good.search = cleanURLSearchParams(good.searchParams, options).good;
+  good.search = cleanUrlSearchParams(good.searchParams, options).good;
 
   return {
-    bad: createURL(url, base),
+    bad: createUrl(url, base),
     good,
   };
 };
 
-const isIgnoreURL = (url) => {
+const isIgnoreUrl = (url) => {
   return [
     url === '#',
     /^javascript:/i.test(url),
@@ -301,7 +301,7 @@ const isIgnoreURL = (url) => {
 };
 
 const getBaseURI = (url) => {
-  const u = createURL(url);
+  const u = createUrl(url);
   return `${u.origin}${u.pathname}`;
 };
 
@@ -318,16 +318,16 @@ const isFacebookRedirect = (url) => {
  * @returns {String} cleaned url string
  */
 // eslint-disable-next-line no-unused-vars
-const cleanURL = (url, base, options = {}) => {
-  if (isIgnoreURL(url)) {
+const cleanUrl = (url, base, options = {}) => {
+  if (isIgnoreUrl(url)) {
     return url;
   }
 
-  const u = createURL(url);
+  const u = createUrl(url);
   if (isFacebookRedirect(url)) {
-    return cleanURL(createURL(u.searchParams.get('u')), base);
+    return cleanUrl(createUrl(u.searchParams.get('u')), base);
   }
 
-  const result = _cleanURL(url, base, options);
+  const result = _cleanUrl(url, base, options);
   return result.good.toString();
 };

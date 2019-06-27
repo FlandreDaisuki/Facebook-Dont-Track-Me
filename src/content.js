@@ -1,10 +1,10 @@
-/* global cleanURL, createURL, $Console, cleanURLSearchParams */
+/* global cleanUrl, createUrl, $Console, cleanUrlSearchParams */
 
 const $console = new $Console();
 
 if (location.hostname.includes('facebook.com')) {
   document.addEventListener('mousedown', async(event) => {
-    const $sp = (url) => createURL(url).searchParams;
+    const $sp = (url) => createUrl(url).searchParams;
 
     const ta = event.target.closest('a');
 
@@ -14,21 +14,21 @@ if (location.hostname.includes('facebook.com')) {
 
     const href = ta.getAttribute('href');
     if (href) {
-      const cleaned = cleanURL(href, document.baseURI, { hard: true });
+      const cleaned = cleanUrl(href, document.baseURI, { hard: true });
       $console.diff('ta[href]', $sp(href), $sp(cleaned));
       ta.href = cleaned;
     }
 
     const ajaxify = ta.getAttribute('ajaxify');
     if (ajaxify) {
-      const cleaned = cleanURL(ajaxify, document.baseURI, { hard: true });
+      const cleaned = cleanUrl(ajaxify, document.baseURI, { hard: true });
       $console.diff('ta[ajaxify]', $sp(ajaxify), $sp(cleaned));
       ta.setAttribute('ajaxify', cleaned.replace(location.origin, ''));
     }
 
     const lynxUri = ta.dataset.lynxUri;
     if (lynxUri) {
-      const cleaned = cleanURL(lynxUri, document.baseURI, { hard: true });
+      const cleaned = cleanUrl(lynxUri, document.baseURI, { hard: true });
       $console.diff('ta[data-lynx-uri]', $sp(lynxUri), $sp(cleaned));
       ta.dataset.lynxUri = cleaned;
     }
@@ -38,8 +38,8 @@ if (location.hostname.includes('facebook.com')) {
 document.addEventListener('readystatechange', () => {
   const bad = new URLSearchParams(location.search);
   const options = location.hostname.includes('facebook.com') ? { hard: true } : {};
-  const good = cleanURLSearchParams(bad, options).good;
-  const cleaned = createURL(location.href);
+  const good = cleanUrlSearchParams(bad, options).good;
+  const cleaned = createUrl(location.href);
   cleaned.search = good;
   $console.diff(`⚡️ ${document.baseURI}`, bad, good);
   history.replaceState(history.state, document.title, cleaned);
