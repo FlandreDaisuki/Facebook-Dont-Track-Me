@@ -8,12 +8,12 @@
 
 - [範例](#範例)
 - [安裝](#安裝)
-  - [Firefox](#firefox)
-  - [以 Chromium 為原型開發的瀏覽器](#以-chromium-為原型開發的瀏覽器)
-  - [Userscript (閹割版)](#userscript-閹割版)
+  - [Firefox](#Firefox)
+  - [以 Chromium 為原型開發的瀏覽器](#以-Chromium-為原型開發的瀏覽器)
+  - [Userscript (閹割版)](#Userscript-閹割版)
 - [權限釋疑](#權限釋疑)
-  - [tabs / contextMenus / clipboardWrite](#tabs--contextmenus--clipboardwrite)
-  - [webRequest / webRequestBlocking / \<all_urls>](#webrequest--webrequestblocking--all_urls)
+  - [tabs / contextMenus / clipboardWrite](#tabs--contextMenus--clipboardWrite)
+  - [webRequest / webRequestBlocking / \<all_urls>](#webRequest--webRequestBlocking--all_urls)
 - [可以一起啟用保護隱私的附加元件](#可以一起啟用保護隱私的附加元件)
 - [授權](#授權)
 
@@ -65,15 +65,19 @@
 
 * [**Privacy Badger** _by EFF Technologists_](https://addons.mozilla.org/firefox/addon/privacy-badger17/)
 
-  他們取消了我需要的 `mousedown` 事件，你可以只在 Facebook 停用 **Privacy Badger**
+  提供一般性的隱私保護，但他們取消了我需要的 `mousedown` 事件，你可以只在 Facebook (facebook.com) 停用 **Privacy Badger**
 
 * [**Facebook Container** _by Mozilla_](https://addons.mozilla.org/firefox/addon/facebook-container/)
 
-  可以一起啟用保護隱私
+  由 Mozilla 開發，主要藉由 Firefox Container 隔離 Facebook 及其他網站的身份驗證。
 
 * [**uBlock Origin** _by Raymond Hill_](https://addons.mozilla.org/firefox/addon/ublock-origin/)
 
-  可以一起啟用保護隱私
+  知名的封包攔截擴充套件，可以一起啟用保護隱私。
+
+* [**Neat URL** _by Geoffrey De Belie_](https://addons.mozilla.org/firefox/addon/neat-url/)
+
+  他們可以處理網址欄相關的問題。本擴充套件除了網址欄，也會攔截檢查 POST 請求與 AJAX 請求。
 
 ## 授權
 

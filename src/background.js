@@ -1,12 +1,6 @@
-/* global softClarifyURL hardClarifyURL clarifyObject log$URL log$Object newURL DEBUG_MODE */
+/* global createURL, cleanObject, $Console, getBaseURI, cleanURL */
 
-const log$$ = (...args) => {
-  if (DEBUG_MODE) {
-    console.log(...args);
-  } else {
-    console.log(args[0]);
-  }
-};
+const $console = new $Console();
 
 function trackStrip(req) {
   // 1. Filter type
@@ -20,7 +14,7 @@ function trackStrip(req) {
     return;
   }
 
-  const url = newURL(req.url);
+  const url = createURL(req.url);
 
   const IGNORE_FB_HOSTS = [
     'fbcdn.net',
@@ -37,11 +31,18 @@ function trackStrip(req) {
     if (req.method === 'POST') {
       // mainly filter /ajax/bz
       if (req.requestBody.formData) {
-        const formData = req.requestBody.formData;
-        req.requestBody.formData = clarifyObject(req.requestBody.formData, { hard: true });
+        const options = {
+          hard: true,
+          force: ['fb_dtsg_ag', 'fb_dtsg'], // experiment, will join to rule one day
+        };
 
-        log$$('POST', req.url);
-        log$Object(formData, req.requestBody.formData, `The formData of ${req.url}`);
+        if (url.pathname === '/ajax/bz') {
+          options.force.push('q'); // experiment, will join to rule one day
+        }
+
+        const { bad, good } = cleanObject(req.requestBody.formData, options);
+        $console.diff(`𝐏𝐎𝐒𝐓 ${getBaseURI(url)}`, bad, good);
+        req.requestBody.formData = good;
       }
     }
 
@@ -53,27 +54,31 @@ function trackStrip(req) {
       return;
     }
 
-    const good = hardClarifyURL(url);
+    const cleaned = cleanURL(url, getBaseURI(url), { hard: true });
 
-    if (url.href !== good) {
+    if (url.href !== cleaned) {
 
-      log$$('IN_FB_REQ', req);
-      log$URL(url.href, good);
+      const bad = createURL(url).searchParams;
+      const good = createURL(cleaned).searchParams;
+
+      $console.diff(`💩 ${getBaseURI(url)}`, bad, good);
 
       return {
-        redirectUrl: good,
+        redirectUrl: cleaned,
       };
     }
   } else {
-    const good = softClarifyURL(url);
+    const cleaned = cleanURL(url, getBaseURI(url));
 
-    if (url.href !== good) {
+    if (url.href !== cleaned) {
 
-      log$$('OUT_FB_REQ', req);
-      log$URL(url.href, good);
+      const bad = createURL(url).searchParams;
+      const good = createURL(cleaned).searchParams;
+
+      $console.diff(`🛰 ${getBaseURI(url)}`, bad, good);
 
       return {
-        redirectUrl: good,
+        redirectUrl: cleaned,
       };
     }
   }
@@ -93,37 +98,41 @@ chrome.contextMenus.create({
 // Chrome
 if (navigator.userAgent.includes('Chrome')) {
   chrome.contextMenus.onClicked.addListener((info) => {
-    let good = null;
+    let cleaned = null;
     const { linkUrl, pageUrl } = info;
-    if (newURL(info.pageUrl).hostname.includes('facebook.com')) {
-      good = hardClarifyURL(linkUrl, pageUrl);
+    if (createURL(info.pageUrl).hostname.includes('facebook.com')) {
+      cleaned = cleanURL(linkUrl, pageUrl, { hard: true });
     } else {
-      good = softClarifyURL(linkUrl, pageUrl);
+      cleaned = cleanURL(linkUrl, pageUrl);
     }
 
-    log$$('COPY_URL');
-    log$URL(linkUrl, good);
+    const bad = createURL(linkUrl).searchParams;
+    const good = createURL(cleaned).searchParams;
+
+    $console.diff(`📋 ${getBaseURI(linkUrl)}`, bad, good);
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
-      chrome.tabs.sendMessage(tab.id, { type: 'clipboard-write', msg: good });
+      chrome.tabs.sendMessage(tab.id, { type: 'clipboard-write', msg: cleaned });
     });
   });
 }
 // Firefox
 else if (navigator.userAgent.includes('Firefox')) {
   chrome.contextMenus.onClicked.addListener((info) => {
-    let good = null;
+    let cleaned = null;
     const { linkUrl, pageUrl } = info;
-    if (newURL(info.pageUrl).hostname.includes('facebook.com')) {
-      good = hardClarifyURL(linkUrl, pageUrl);
+    if (createURL(info.pageUrl).hostname.includes('facebook.com')) {
+      cleaned = cleanURL(linkUrl, pageUrl, { hard: true });
     } else {
-      good = softClarifyURL(linkUrl, pageUrl);
+      cleaned = cleanURL(linkUrl, pageUrl);
     }
 
-    log$$('COPY_URL');
-    log$URL(linkUrl, good);
+    const bad = createURL(linkUrl).searchParams;
+    const good = createURL(cleaned).searchParams;
 
-    navigator.clipboard.writeText(good);
+    $console.diff(`📋 ${getBaseURI(linkUrl)}`, bad, good);
+
+    navigator.clipboard.writeText(cleaned);
   });
 }

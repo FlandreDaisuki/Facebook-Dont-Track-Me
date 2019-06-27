@@ -1,16 +1,3 @@
-// ==UserScript==
-// @name         Facebook Don't Track Me
-// @namespace    https://github.com/FlandreDaisuki
-// @version      1.6.0
-// @description  Strip Facebook track parameters and clarify url
-// @description:zh-TW 移除 Facebook 追蹤參數及淨化網址欄
-// @author       FlandreDaisuki
-// @include      *
-// @run-at       document-start
-// @grant        none
-// @noframes
-// ==/UserScript==
-
 // Thanks this bug...
 // https://bugzilla.mozilla.org/show_bug.cgi?id=1508174
 if (!(Symbol.iterator in new URLSearchParams().keys())) {
@@ -110,6 +97,7 @@ class Zet extends Set {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 class $Console {
   constructor(limit = 100, caller = console.log) {
     this.counter = 0;
@@ -343,48 +331,3 @@ const cleanURL = (url, base, options = {}) => {
   const result = _cleanURL(url, base, options);
   return result.good.toString();
 };
-
-const $console = new $Console();
-
-if (location.hostname.includes('facebook.com')) {
-  document.addEventListener('mousedown', async(event) => {
-    const $sp = (url) => createURL(url).searchParams;
-
-    const ta = event.target.closest('a');
-
-    if (!ta) {
-      return;
-    }
-
-    const href = ta.getAttribute('href');
-    if (href) {
-      const cleaned = cleanURL(href, document.baseURI, { hard: true });
-      $console.diff('ta[href]', $sp(href), $sp(cleaned));
-      ta.href = cleaned;
-    }
-
-    const ajaxify = ta.getAttribute('ajaxify');
-    if (ajaxify) {
-      const cleaned = cleanURL(ajaxify, document.baseURI, { hard: true });
-      $console.diff('ta[ajaxify]', $sp(ajaxify), $sp(cleaned));
-      ta.setAttribute('ajaxify', cleaned.replace(location.origin, ''));
-    }
-
-    const lynxUri = ta.dataset.lynxUri;
-    if (lynxUri) {
-      const cleaned = cleanURL(lynxUri, document.baseURI, { hard: true });
-      $console.diff('ta[data-lynx-uri]', $sp(lynxUri), $sp(cleaned));
-      ta.dataset.lynxUri = cleaned;
-    }
-  });
-}
-
-document.addEventListener('readystatechange', () => {
-  const bad = new URLSearchParams(location.search);
-  const options = location.hostname.includes('facebook.com') ? { hard: true } : {};
-  const good = cleanURLSearchParams(bad, options).good;
-  const cleaned = createURL(location.href);
-  cleaned.search = good;
-  $console.diff(`⚡️ ${document.baseURI}`, bad, good);
-  history.replaceState(history.state, document.title, cleaned);
-});

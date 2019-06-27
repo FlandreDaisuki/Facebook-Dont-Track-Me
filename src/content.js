@@ -1,7 +1,11 @@
-/* global hardClarifyURL log$URL */
+/* global cleanURL, createURL, $Console, cleanURLSearchParams */
+
+const $console = new $Console();
 
 if (location.hostname.includes('facebook.com')) {
-  document.addEventListener('mousedown', (event) => {
+  document.addEventListener('mousedown', async(event) => {
+    const $sp = (url) => createURL(url).searchParams;
+
     const ta = event.target.closest('a');
 
     if (!ta) {
@@ -10,35 +14,35 @@ if (location.hostname.includes('facebook.com')) {
 
     const href = ta.getAttribute('href');
     if (href) {
-      const good = hardClarifyURL(ta.href);
-      log$URL(ta.href, good, 'ta[href]');
-      ta.href = good;
+      const cleaned = cleanURL(href, document.baseURI, { hard: true });
+      $console.diff('ta[href]', $sp(href), $sp(cleaned));
+      ta.href = cleaned;
     }
 
     const ajaxify = ta.getAttribute('ajaxify');
     if (ajaxify) {
-      const good = hardClarifyURL(ajaxify).replace(location.origin, '');
-      log$URL(ajaxify, good, 'ta[ajaxify]');
-      ta.setAttribute('ajaxify', good);
+      const cleaned = cleanURL(ajaxify, document.baseURI, { hard: true });
+      $console.diff('ta[ajaxify]', $sp(ajaxify), $sp(cleaned));
+      ta.setAttribute('ajaxify', cleaned.replace(location.origin, ''));
     }
 
     const lynxUri = ta.dataset.lynxUri;
     if (lynxUri) {
-      const good = hardClarifyURL(lynxUri);
-      log$URL(lynxUri, good, 'ta[data-lynx-uri]');
-      ta.dataset.lynxUri = good;
+      const cleaned = cleanURL(lynxUri, document.baseURI, { hard: true });
+      $console.diff('ta[data-lynx-uri]', $sp(lynxUri), $sp(cleaned));
+      ta.dataset.lynxUri = cleaned;
     }
   });
 }
 
-/* global newURL clarifyObject */
 document.addEventListener('readystatechange', () => {
-  const sp = new URLSearchParams(location.search);
+  const bad = new URLSearchParams(location.search);
   const options = location.hostname.includes('facebook.com') ? { hard: true } : {};
-  const goodSearch = new URLSearchParams(clarifyObject(sp, options)).toString();
-  const goodURL = newURL(location.href);
-  goodURL.search = goodSearch;
-  history.replaceState(history.state, document.title, goodURL);
+  const good = cleanURLSearchParams(bad, options).good;
+  const cleaned = createURL(location.href);
+  cleaned.search = good;
+  $console.diff(`⚡️ ${document.baseURI}`, bad, good);
+  history.replaceState(history.state, document.title, cleaned);
 });
 
 // Chrome

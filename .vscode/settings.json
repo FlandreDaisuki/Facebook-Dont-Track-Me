@@ -1,4 +1,27 @@
 {
     "eslint.autoFixOnSave": true,
-    "markdown.extension.toc.levels": "2..6"
+    "markdown.extension.toc.levels": "2..6",
+    "cSpell.words": [
+        "ajaxify",
+        "daisuki",
+        "fbclid",
+        "flandre",
+        "itor",
+        "subpage",
+        "superset",
+        "xmlhttprequest"
+    ],
+    "cSpell.ignoreWords": [
+        "ag",
+        "dtsg",
+        "extragetparams",
+        "fb",
+        "fbcdn",
+        "guccounter",
+        "guce",
+        "ignore",
+        "notif",
+        "pagelet",
+        "pathes"
+    ]
 }

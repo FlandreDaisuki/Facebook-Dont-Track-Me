@@ -6,16 +6,16 @@ Strip Facebook track parameters and clarify url
 
 [[English](./README.md)] - [[正體中文](./README_zh-TW.md)]
 
-- [Examples](#examples)
-- [Installation](#installation)
-  - [Firefox](#firefox)
-  - [Chromium-based](#chromium-based)
-  - [Userscript (lite)](#userscript-lite)
-- [Permission Explanation](#permission-explanation)
-  - [tabs / contextMenus / clipboardWrite](#tabs--contextmenus--clipboardwrite)
-  - [webRequest / webRequestBlocking / \<all_urls>](#webrequest--webrequestblocking--all_urls)
-- [Work with Other Extensions](#work-with-other-extensions)
-- [LICENSE](#license)
+- [Examples](#Examples)
+- [Installation](#Installation)
+  - [Firefox](#Firefox)
+  - [Chromium-based](#Chromium-based)
+  - [Userscript (lite)](#Userscript-lite)
+- [Permission Explanation](#Permission-Explanation)
+  - [tabs / contextMenus / clipboardWrite](#tabs--contextMenus--clipboardWrite)
+  - [webRequest / webRequestBlocking / \<all_urls>](#webRequest--webRequestBlocking--all_urls)
+- [Work with Other Extensions](#Work-with-Other-Extensions)
+- [LICENSE](#LICENSE)
 
 ## Examples
 
@@ -65,15 +65,19 @@ The `webRequest` and `webRequestBlocking` can let me filter and clarify all requ
 
 * [**Privacy Badger** _by EFF Technologists_](https://addons.mozilla.org/firefox/addon/privacy-badger17/)
 
-  They canceled `mousedown` event that I need, you can disable **Privacy Badger** in Facebook only
+  Protect privacy generally but they canceled `mousedown` event that we need, you can disable **Privacy Badger** in Facebook (facebook.com) only.
 
 * [**Facebook Container** _by Mozilla_](https://addons.mozilla.org/firefox/addon/facebook-container/)
 
-  Work well together
+  Mozilla use Firefox Container technique to isolate Facebook from other sites.
 
 * [**uBlock Origin** _by Raymond Hill_](https://addons.mozilla.org/firefox/addon/ublock-origin/)
 
-  Work well together
+  The well-known request filter extension, work well with our extension.
+
+* [**Neat URL** _by Geoffrey De Belie_](https://addons.mozilla.org/firefox/addon/neat-url/)
+
+  They handle addresses very well. Our extension checks your POST and AJAX requests additionally.
 
 ## LICENSE
 

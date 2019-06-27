@@ -1,0 +1,11 @@
+# 更新紀錄 CHANGELOG
+
+## v1.6.0
+
+* Refactor 1.5.x
+* Add filter `fb_dtsg_ag`, `fb_dtsg` @{POST `www.facebook.com/*`}
+* Add filter `q` @{POST `www.facebook.com/ajax/bz`}
+
+* 重構 1.5.x 程式碼
+* 追加過濾 `fb_dtsg_ag`, `fb_dtsg` @{POST `www.facebook.com/*`}
+* 追加過濾 `q` @{POST `www.facebook.com/ajax/bz`}
