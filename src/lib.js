@@ -134,10 +134,6 @@ class $Console {
     const removed = Zet.difference(iterA, intersection);
     const added = Zet.difference(iterB, intersection);
 
-    if (!removed.size && !added.size) {
-      return;
-    }
-
     this._autoClear();
 
     const styledLabel = `${label} %c-${removed.size} %c+${added.size} %c=${intersection.size}`;
