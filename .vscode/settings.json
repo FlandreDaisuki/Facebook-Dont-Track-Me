@@ -23,5 +23,13 @@
         "notif",
         "pagelet",
         "pathes"
-    ]
+    ],
+    "better-comments.tags": [
+        {
+            "tag": "experiment",
+            "color": "#00AA22",
+            "strikethrough": false,
+            "backgroundColor": "transparent"
+        }
+    ],
 }

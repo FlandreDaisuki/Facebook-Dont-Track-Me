@@ -99,7 +99,7 @@ class Zet extends Set {
 
 // eslint-disable-next-line no-unused-vars
 class $Console {
-  constructor(limit = 100, caller = console.log) {
+  constructor({ limit = 100, caller = console.log } = {}) {
     this.counter = 0;
     this.limit = limit;
     this.caller = caller.bind(console);
@@ -136,7 +136,8 @@ class $Console {
 
     this._autoClear();
 
-    const styledLabel = `${label} %c-${removed.size} %c+${added.size} %c=${intersection.size}`;
+    const [a, i, r] = [added.size, intersection.size, removed.size];
+    const styledLabel = `${label} %c-${r} %c+${a} %c=${i}`;
     console.groupCollapsed(styledLabel, 'color: red;', 'color: green;', 'color: blue;');
     for (const e of removed) {
       this.caller(`%c- ${e} %c${get(A, e)}`, 'color: #F00; font-weight: bold;', 'color: #811;');

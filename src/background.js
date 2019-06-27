@@ -33,11 +33,11 @@ function trackStrip(req) {
       if (req.requestBody.formData) {
         const options = {
           hard: true,
-          force: ['fb_dtsg_ag', 'fb_dtsg'], // experiment, will join to rule one day
+          force: ['fb_dtsg_ag', 'fb_dtsg'], // experiment
         };
 
         if (url.pathname === '/ajax/bz') {
-          options.force.push('q'); // experiment, will join to rule one day
+          options.force.push('q'); // experiment
         }
 
         const { bad, good } = cleanObject(req.requestBody.formData, options);
