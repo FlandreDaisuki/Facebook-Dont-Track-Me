@@ -179,15 +179,16 @@ class Rule {
   }
   get HARD_USELESS() {
     return [
-      'eid',
+      'rc',
       'dti',
       'dpr',
-      'rc',
-      'comment_tracking',
-      'tn-str',
-      'extragetparams',
+      'eid',
       'lst',
       'epa',
+      'tn-str',
+      'extragetparams',
+      'comment_tracking',
+      'tracking_message', // experiment
     ].concat(this.SOFT_USELESS);
   }
   get HARD_PATTERNS() {
