@@ -1,4 +1,4 @@
-/* global cleanUrl, createUrl, $Console, cleanUrlSearchParams */
+/* global cleanUrl, createUrl, $Console, cleanUrlSearchParams, getBaseURI */
 
 const $console = new $Console();
 
@@ -15,21 +15,21 @@ if (location.hostname.includes('facebook.com')) {
     const href = ta.getAttribute('href');
     if (href) {
       const cleaned = cleanUrl(href, document.baseURI, { hard: true });
-      $console.diff('ta[href]', $sp(href), $sp(cleaned));
+      $console.diff(`a[href] ${getBaseURI(cleaned)}`, $sp(href), $sp(cleaned));
       ta.href = cleaned;
     }
 
     const ajaxify = ta.getAttribute('ajaxify');
     if (ajaxify) {
       const cleaned = cleanUrl(ajaxify, document.baseURI, { hard: true });
-      $console.diff('ta[ajaxify]', $sp(ajaxify), $sp(cleaned));
+      $console.diff(`a[ajaxify] ${getBaseURI(cleaned)}`, $sp(ajaxify), $sp(cleaned));
       ta.setAttribute('ajaxify', cleaned.replace(location.origin, ''));
     }
 
     const lynxUri = ta.dataset.lynxUri;
     if (lynxUri) {
       const cleaned = cleanUrl(lynxUri, document.baseURI, { hard: true });
-      $console.diff('ta[data-lynx-uri]', $sp(lynxUri), $sp(cleaned));
+      $console.diff(`a[data-lynx-uri] ${getBaseURI(cleaned)}`, $sp(lynxUri), $sp(cleaned));
       ta.dataset.lynxUri = cleaned;
     }
   });
