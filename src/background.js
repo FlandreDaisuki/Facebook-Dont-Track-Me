@@ -33,11 +33,15 @@ function trackStrip(req) {
       if (req.requestBody.formData) {
         const options = {
           hard: true,
-          force: ['fb_dtsg_ag', 'fb_dtsg'], // experiment
+          force: ['fb_dtsg_ag', 'fb_dtsg', 'jazoest'], // experiment
         };
 
-        if (url.pathname === '/ajax/bz') {
-          options.force.push('q'); // experiment
+        if (url.pathname.startsWith('/ajax/bz')) {
+          options.force.push('q', 'ph', 'ts'); // experiment
+        }
+
+        if (url.pathname.startsWith('/api/graphql')) {
+          options.force.push('variables', 'fb_api_caller_class', 'fb_api_req_friendly_name', 'doc_id', 'av'); // experiment
         }
 
         const { bad, good } = cleanObject(req.requestBody.formData, options);

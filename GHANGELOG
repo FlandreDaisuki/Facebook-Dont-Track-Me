@@ -6,8 +6,10 @@
 * Add filter `tracking_message` @{HARD_USELESS}
 * Add filter `fb_dtsg_ag`, `fb_dtsg` @{POST `www.facebook.com/*`}
 * Add filter `q` @{POST `www.facebook.com/ajax/bz`}
+* Add filter `fb_api_caller_class`, `fb_api_req_friendly_name`, … @{POST `www.facebook.com/api/graphql`}
 
 * 重構 1.5.x 程式碼
 * 追加過濾 `tracking_message` @{HARD_USELESS}
 * 追加過濾 `fb_dtsg_ag`, `fb_dtsg` @{POST `www.facebook.com/*`}
 * 追加過濾 `q` @{POST `www.facebook.com/ajax/bz`}
+* 追加過濾 `fb_api_caller_class`, `fb_api_req_friendly_name`, … @{POST `www.facebook.com/api/graphql`}
