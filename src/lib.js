@@ -329,3 +329,14 @@ const cleanUrl = (url, base, options = {}) => {
   const result = _cleanUrl(url, base, options);
   return result.good.toString();
 };
+
+// eslint-disable-next-line no-unused-vars
+const areEqualUrls = (urlA, urlB) => {
+  const a = createUrl(urlA);
+  const b = createUrl(urlB);
+  const uriComps = ['origin', 'pathname', 'searchParams'];
+
+  return uriComps.every((comp) => {
+    return String(a[comp]) === String(b[comp]);
+  });
+};

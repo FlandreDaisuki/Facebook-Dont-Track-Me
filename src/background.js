@@ -1,4 +1,4 @@
-/* global createUrl, cleanObject, $Console, getBaseURI, cleanUrl */
+/* global createUrl, cleanObject, $Console, getBaseURI, cleanUrl, areEqualUrls */
 
 const $console = new $Console();
 
@@ -60,7 +60,7 @@ function trackStrip(req) {
 
     const cleaned = cleanUrl(url, getBaseURI(url), { hard: true });
 
-    if (url.href !== cleaned) {
+    if (!areEqualUrls(url.href, cleaned)) {
 
       const bad = createUrl(url).searchParams;
       const good = createUrl(cleaned).searchParams;
@@ -74,7 +74,7 @@ function trackStrip(req) {
   } else {
     const cleaned = cleanUrl(url, getBaseURI(url));
 
-    if (url.href !== cleaned) {
+    if (!areEqualUrls(url.href, cleaned)) {
 
       const bad = createUrl(url).searchParams;
       const good = createUrl(cleaned).searchParams;
