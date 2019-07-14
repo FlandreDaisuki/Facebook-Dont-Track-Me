@@ -45,7 +45,7 @@ function trackStrip(req) {
         }
 
         const { bad, good } = cleanObject(req.requestBody.formData, options);
-        $console.diff(`𝐏𝐎𝐒𝐓 ${getBaseURI(url)}`, bad, good);
+        $console.diff(`𝐏𝐎𝐒𝐓 ${decodeURI(getBaseURI(url))}`, bad, good);
         req.requestBody.formData = good;
       }
     }
@@ -65,7 +65,7 @@ function trackStrip(req) {
       const bad = createUrl(url).searchParams;
       const good = createUrl(cleaned).searchParams;
 
-      $console.diff(`💩 ${getBaseURI(url)}`, bad, good);
+      $console.diff(`💩 ${decodeURI(getBaseURI(url))}`, bad, good);
 
       return {
         redirectUrl: cleaned,
@@ -79,7 +79,7 @@ function trackStrip(req) {
       const bad = createUrl(url).searchParams;
       const good = createUrl(cleaned).searchParams;
 
-      $console.diff(`🛰 ${getBaseURI(url)}`, bad, good);
+      $console.diff(`🛰 ${decodeURI(getBaseURI(url))}`, bad, good);
 
       return {
         redirectUrl: cleaned,
@@ -113,7 +113,7 @@ if (navigator.userAgent.includes('Chrome')) {
     const bad = createUrl(linkUrl).searchParams;
     const good = createUrl(cleaned).searchParams;
 
-    $console.diff(`📋 ${getBaseURI(linkUrl)}`, bad, good);
+    $console.diff(`📋 ${decodeURI(getBaseURI(linkUrl))}`, bad, good);
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
@@ -135,7 +135,7 @@ else if (navigator.userAgent.includes('Firefox')) {
     const bad = createUrl(linkUrl).searchParams;
     const good = createUrl(cleaned).searchParams;
 
-    $console.diff(`📋 ${getBaseURI(linkUrl)}`, bad, good);
+    $console.diff(`📋 ${decodeURI(getBaseURI(linkUrl))}`, bad, good);
 
     navigator.clipboard.writeText(cleaned);
   });
