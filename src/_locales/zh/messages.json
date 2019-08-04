@@ -1,5 +1,8 @@
 {
   "CopyCleanedUrl":{
     "message": "複製乾淨鏈結網址"
+  },
+  "HideConsoleLog":{
+    "message": "不顯示主控台紀錄"
   }
 }

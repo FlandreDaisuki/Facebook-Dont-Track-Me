@@ -1,6 +1,14 @@
 /* global createUrl, cleanObject, $Console, getBaseURI, cleanUrl, areEqualUrls */
 
-const $console = new $Console();
+let $console;
+chrome.storage.sync.get('options', ({ options }) => {
+  $console = options.HideConsoleLog ? new $Console({ fake: true }) : new $Console();
+});
+chrome.storage.onChanged.addListener(({ options }, area) => {
+  if (area === 'sync' && options) {
+    $console = options.newValue.HideConsoleLog ? new $Console({ fake: true }) : new $Console();
+  }
+});
 
 function trackStrip(req) {
   // 1. Filter type

@@ -1,5 +1,8 @@
 {
   "CopyCleanedUrl":{
     "message": "Copy Cleaned URL"
+  },
+  "HideConsoleLog":{
+    "message": "Hide Console Log"
   }
 }

@@ -9,6 +9,7 @@
   },
   "permissions": [
     "tabs",
+    "storage",
     "contextMenus",
     "clipboardWrite",
     "webRequest",
@@ -25,6 +26,9 @@
       "run_at": "document_start"
     }
   ],
+  "options_ui": {
+    "page": "options.html"
+  },
   "applications": {
     "gecko": {
       "id": "Facebook-Dont-Track-Me@flandre.tw"

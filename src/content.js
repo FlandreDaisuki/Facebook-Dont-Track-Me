@@ -1,6 +1,14 @@
 /* global cleanUrl, createUrl, $Console, cleanUrlSearchParams, getBaseURI */
 
-const $console = new $Console();
+let $console;
+chrome.storage.sync.get('options', ({ options }) => {
+  $console = options.HideConsoleLog ? new $Console({ fake: true }) : new $Console();
+});
+chrome.storage.onChanged.addListener(({ options }, area) => {
+  if (area === 'sync' && options) {
+    $console = options.newValue.HideConsoleLog ? new $Console({ fake: true }) : new $Console();
+  }
+});
 
 if (location.hostname.includes('facebook.com')) {
   document.addEventListener('mousedown', async(event) => {

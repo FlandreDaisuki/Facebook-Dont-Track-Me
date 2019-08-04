@@ -99,13 +99,18 @@ class Zet extends Set {
 
 // eslint-disable-next-line no-unused-vars
 class $Console {
-  constructor({ limit = 100, caller = console.log } = {}) {
+  constructor({ limit = 100, caller = console.log, fake = false } = {}) {
     this.counter = 0;
     this.limit = limit;
     this.caller = caller.bind(console);
+    this.fake = fake;
   }
 
   _autoClear() {
+    if (this.fake) {
+      return;
+    }
+
     if (this.counter > this.limit) {
       console.clear();
       this.counter = 0;
@@ -119,6 +124,10 @@ class $Console {
   }
 
   diff(label, A, B) {
+    if (this.fake) {
+      return;
+    }
+
     let iterA = A, iterB = B;
 
     const get = (obj, key) => obj.get ? obj.get(key) : obj[key];
