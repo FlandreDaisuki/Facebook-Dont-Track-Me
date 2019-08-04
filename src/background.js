@@ -125,7 +125,11 @@ if (navigator.userAgent.includes('Chrome')) {
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
-      chrome.tabs.sendMessage(tab.id, { type: 'clipboard-write', msg: cleaned });
+      const decodedComponents = createUrl(cleaned).protocol.includes('http') ? decodeURIComponent(good) : decodeURIComponent(bad);
+      chrome.tabs.sendMessage(tab.id, {
+        type: 'clipboard-write',
+        msg: `${decodeURI(getBaseURI(linkUrl))}?${decodedComponents}`,
+      });
     });
   });
 }
@@ -145,6 +149,7 @@ else if (navigator.userAgent.includes('Firefox')) {
 
     $console.diff(`📋 ${decodeURI(getBaseURI(linkUrl))}`, bad, good);
 
-    navigator.clipboard.writeText(cleaned);
+    const decodedComponents = createUrl(cleaned).protocol.includes('http') ? decodeURIComponent(good) : decodeURIComponent(bad);
+    navigator.clipboard.writeText(`${decodeURI(getBaseURI(linkUrl))}?${decodedComponents}`);
   });
 }

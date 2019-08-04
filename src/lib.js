@@ -309,7 +309,7 @@ const isIgnoreUrl = (url) => {
 
 const getBaseURI = (url) => {
   const u = createUrl(url);
-  return `${u.origin}${u.pathname}`;
+  return `${u.protocol}${u.host ? '//' : ''}${u.host}${u.pathname}`;
 };
 
 const isFacebookRedirect = (url) => {
