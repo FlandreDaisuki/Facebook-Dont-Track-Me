@@ -121,14 +121,16 @@ if (navigator.userAgent.includes('Chrome')) {
     const bad = createUrl(linkUrl).searchParams;
     const good = createUrl(cleaned).searchParams;
 
-    $console.diff(`📋 ${decodeURI(getBaseURI(linkUrl))}`, bad, good);
+    const decodedBaseURI = decodeURI(getBaseURI(linkUrl));
+    $console.diff(`📋 ${decodedBaseURI}`, bad, good);
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
       const decodedComponents = createUrl(cleaned).protocol.includes('http') ? decodeURIComponent(good) : decodeURIComponent(bad);
+      const msg = decodedComponents ? `${decodedBaseURI}?${decodedComponents}` : decodedBaseURI;
       chrome.tabs.sendMessage(tab.id, {
         type: 'clipboard-write',
-        msg: `${decodeURI(getBaseURI(linkUrl))}?${decodedComponents}`,
+        msg,
       });
     });
   });
@@ -147,9 +149,11 @@ else if (navigator.userAgent.includes('Firefox')) {
     const bad = createUrl(linkUrl).searchParams;
     const good = createUrl(cleaned).searchParams;
 
-    $console.diff(`📋 ${decodeURI(getBaseURI(linkUrl))}`, bad, good);
+    const decodedBaseURI = decodeURI(getBaseURI(linkUrl));
+    $console.diff(`📋 ${decodedBaseURI}`, bad, good);
 
     const decodedComponents = createUrl(cleaned).protocol.includes('http') ? decodeURIComponent(good) : decodeURIComponent(bad);
-    navigator.clipboard.writeText(`${decodeURI(getBaseURI(linkUrl))}?${decodedComponents}`);
+    const msg = decodedComponents ? `${decodedBaseURI}?${decodedComponents}` : decodedBaseURI;
+    navigator.clipboard.writeText(msg);
   });
 }
