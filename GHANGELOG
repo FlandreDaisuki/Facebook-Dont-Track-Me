@@ -1,5 +1,11 @@
 # 更新紀錄 CHANGELOG
 
+## v1.6.1
+
+* Fix storage.sync get null at first time on chrome.
+
+* 修正 chrome 在第一次啟動時 storage.sync 拿不到東西的錯誤
+
 ## v1.6.0
 
 * Refactor 1.5.x

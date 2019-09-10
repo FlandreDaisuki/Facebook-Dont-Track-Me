@@ -2,6 +2,9 @@
 
 let $console;
 chrome.storage.sync.get('options', ({ options }) => {
+  if (!options) {
+    options = { HideConsoleLog: true };
+  }
   $console = options.HideConsoleLog ? new $Console({ fake: true }) : new $Console();
 });
 chrome.storage.onChanged.addListener(({ options }, area) => {
