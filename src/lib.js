@@ -198,6 +198,11 @@ class Rule {
       'extragetparams',
       'comment_tracking',
       'tracking_message', // experiment
+      'refid', // experiment: m.facebook.com
+      '_ft_', // experiment: m.facebook.com
+      'av', // experiment: m.facebook.com
+      'eav', // experiment: m.facebook.com
+      'origin_uri', // experiment: m.facebook.com
     ].concat(this.SOFT_USELESS);
   }
   get HARD_PATTERNS() {
@@ -275,9 +280,20 @@ const cleanObject = (bad, options = {}) => {
  * @returns {{bad: URLSearchParams, good: URLSearchParams}} BadGood
  */
 const cleanUrlSearchParams = (bad, options = {}) => {
-  const _bad = Object.fromEntries(bad.entries());
+  const _bad = {};
+  for (const key of new Set(bad.keys())) {
+    _bad[key] = bad.getAll(key);
+  }
+
   const _good = cleanObject(_bad, options).good;
-  const good = new URLSearchParams(_good);
+  const good = new URLSearchParams();
+  for (const [key, value] of Object.entries(_good)) {
+    if (Array.isArray(value)) {
+      value.forEach((v) => good.append(key, v));
+    } else {
+      good.append(key, value);
+    }
+  }
   return { bad, good };
 };
 
