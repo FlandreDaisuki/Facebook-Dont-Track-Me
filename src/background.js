@@ -103,7 +103,7 @@ function trackStrip(req) {
 chrome.webRequest.onBeforeRequest.addListener(
   trackStrip,
   { urls: ['<all_urls>'] },
-  ['blocking', 'requestBody']
+  ['blocking', 'requestBody'],
 );
 
 chrome.contextMenus.create({
@@ -122,17 +122,25 @@ if (navigator.userAgent.includes('Chrome')) {
       cleaned = cleanUrl(linkUrl, pageUrl);
     }
 
-    const bad = createUrl(linkUrl).searchParams;
-    const good = createUrl(cleaned).searchParams;
+    const bad = createUrl(linkUrl);
+    const good = createUrl(cleaned);
 
-    const decodedBaseURI = decodeURI(getBaseURI(linkUrl));
-    $console.diff(`📋 ${decodedBaseURI}`, bad, good);
+    let msg = '';
+    if (good.origin !== bad.origin) {
+      // redirect
+      $console.log(`📋 ${bad}→${good}`);
+      msg = String(good);
+    } else {
+      const decodedBaseURI = decodeURI(getBaseURI(linkUrl));
+      $console.diff(`📋 ${decodedBaseURI}`, bad, good);
+      const decodedComponents = createUrl(cleaned).protocol.includes('http')
+        ? decodeURIComponent(good.searchParams)
+        : decodeURIComponent(bad.searchParams);
+      msg = decodedComponents ? `${decodedBaseURI}?${decodedComponents}` : decodedBaseURI;
+    }
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const tab = tabs[0];
-      const decodedComponents = createUrl(cleaned).protocol.includes('http') ? decodeURIComponent(good) : decodeURIComponent(bad);
-      const msg = decodedComponents ? `${decodedBaseURI}?${decodedComponents}` : decodedBaseURI;
-      chrome.tabs.sendMessage(tab.id, {
+      chrome.tabs.sendMessage(tabs[0].id, {
         type: 'clipboard-write',
         msg,
       });
@@ -150,14 +158,24 @@ else if (navigator.userAgent.includes('Firefox')) {
       cleaned = cleanUrl(linkUrl, pageUrl);
     }
 
-    const bad = createUrl(linkUrl).searchParams;
-    const good = createUrl(cleaned).searchParams;
+    const bad = createUrl(linkUrl);
+    const good = createUrl(cleaned);
 
     const decodedBaseURI = decodeURI(getBaseURI(linkUrl));
-    $console.diff(`📋 ${decodedBaseURI}`, bad, good);
 
-    const decodedComponents = createUrl(cleaned).protocol.includes('http') ? decodeURIComponent(good) : decodeURIComponent(bad);
-    const msg = decodedComponents ? `${decodedBaseURI}?${decodedComponents}` : decodedBaseURI;
+    let msg = '';
+    if (good.origin !== bad.origin) {
+      // redirect
+      $console.log(`📋 ${bad}→${good}`);
+      msg = String(good);
+    } else {
+      $console.diff(`📋 ${decodedBaseURI}`, bad.searchParams, good.searchParams);
+      const decodedComponents = createUrl(cleaned).protocol.includes('http')
+        ? decodeURIComponent(good.searchParams)
+        : decodeURIComponent(bad.searchParams);
+      msg = decodedComponents ? `${decodedBaseURI}?${decodedComponents}` : decodedBaseURI;
+    }
+
     navigator.clipboard.writeText(msg);
   });
 }
