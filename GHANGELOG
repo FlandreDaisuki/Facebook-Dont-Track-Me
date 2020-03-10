@@ -1,4 +1,9 @@
 # 更新紀錄 CHANGELOG
+## v1.6.3
+
+* Fix copy link when Privacy Badger is enabled.
+
+* 修正當 Privacy Badger 啟用時，右鍵複製連結錯誤
 
 ## v1.6.1
 
