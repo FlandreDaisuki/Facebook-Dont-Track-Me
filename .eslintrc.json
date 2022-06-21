@@ -4,9 +4,12 @@
     "browser": true,
     "webextensions": true
   },
+  "globals": {
+    "browser": true
+  },
   "parserOptions": {
     "sourceType": "module",
-    "ecmaVersion": 8
+    "ecmaVersion": "latest"
   },
   "extends": [
     "eslint:recommended"

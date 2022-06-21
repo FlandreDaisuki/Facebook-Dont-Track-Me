@@ -1,181 +1,176 @@
-/* global createUrl, cleanObject, $Console, getBaseURI, cleanUrl, areEqualUrls */
-
-let $console;
-chrome.storage.sync.get('options', ({ options }) => {
-  if (!options) {
-    options = { HideConsoleLog: true };
-    chrome.storage.sync.set({ options });
+/** @type {(url: URLString | URL, base: URLString) => URL} */
+const createUrl = (url, base) => {
+  try {
+    return new URL(url, base);
+  } catch {
+    return new URL(url, document.baseURI);
   }
-  $console = options.HideConsoleLog ? new $Console({ fake: true }) : new $Console();
-});
-chrome.storage.onChanged.addListener(({ options }, area) => {
-  if (area === 'sync' && options) {
-    $console = options.newValue.HideConsoleLog ? new $Console({ fake: true }) : new $Console();
+};
+
+/** @type {(url: URLString | URL) => URLString} */
+const getBaseURI = (url) => {
+  const u = createUrl(url);
+  return `${u.protocol}${u.host ? '//' : ''}${u.host}${u.pathname}`;
+};
+
+/** @type {(a: URLString | URL, b: URLString | URL) => boolean} */
+const areEqualUrls = (a, b) => {
+  const aUrl = createUrl(a);
+  const bUrl = createUrl(b);
+  const aSearchParams = aUrl.searchParams;
+  const bSearchParams = bUrl.searchParams;
+  const allQueries = [...aSearchParams.keys(), ...bSearchParams.keys()];
+
+  return [
+    a.origin === b.origin,
+    a.pathname === b.pathname,
+    allQueries.every((q) => aSearchParams.get(q) === bSearchParams.get(q)),
+  ].every(Boolean);
+};
+
+/** @type { Rule[] } */
+const rules = [
+  { type: ['main_frame', 'sub_frame'], host: '*', path: '*',
+    action: 'strip', query: [
+      'fbclid',
+      /^utm_/, // Google Analytics
+    ] },
+
+  { type: ['xmlhttprequest'], method: '*', host: /.facebook.com$/, path: '*',
+    action: 'strip', query: [
+      'rc',
+      'dti',
+      'dpr',
+      'eid',
+      'lst',
+      'epa',
+      'tn-str',
+      'extragetparams',
+      'comment_tracking',
+      'tracking_message',
+      'refid',
+      '_ft_',
+      'av',
+      'eav',
+      'origin_uri',
+      /^__/,
+      /^hc_/,
+      /^ft\[/,
+      /^\w+ref/,
+      /^notif_/,
+      /^timeline_context_item_/,
+    ] },
+
+  { type: 'beacon', host: /.facebook.com$/, path: '*',
+    action: 'drop' },
+
+  { type: ['beacon', 'xmlhttprequest'], host: 'www.facebook.com', path: '/ajax/bnzai',
+    action: 'drop' },
+];
+
+const cleanUrl = (url, base) => {
+  const cleanedUrl = createUrl(url, base);
+
+  if (!cleanedUrl.protocol.match(/^https?:$/) || cleanedUrl.hash !== '') {
+    return cleanedUrl.href;
   }
-});
 
-function trackStrip(req) {
-  // 1. Filter type
-  const ACCEPT_TYPES = [
-    'beacon',
-    'sub_frame',
-    'main_frame',
-    'xmlhttprequest',
-  ];
-  if (!ACCEPT_TYPES.includes(req.type)) {
-    return;
+  if (getBaseURI(cleanedUrl) === 'https://l.facebook.com/l.php') {
+    return cleanUrl(cleanedUrl.searchParams.get('u'));
   }
 
-  const url = createUrl(req.url);
+  const matchedRules = rules
+    .filter((rule) => rule.action === 'strip')
+    .filter((rule) => {
+      if (rule.host === '*') { return true; }
+      if (typeof(rule.host) === 'string') {return rule.host === cleanedUrl.host;}
+      return rule.host.test(cleanedUrl.host);
+    })
+    .filter((rule) => {
+      if (rule.path === '*') { return true; }
+      if (typeof(rule.path) === 'string') {return rule.path === cleanedUrl.pathname;}
+      return rule.path.test(cleanedUrl.pathname);
+    });
 
-  const IGNORE_FB_HOSTS = [
-    'fbcdn.net',
-    '-chat.facebook.com',
-    'upload.facebook.com',
-  ];
-  // 2. Ignore specific hosts
-  if (IGNORE_FB_HOSTS.some((h) => url.hostname.endsWith(h))) {
-    return;
-  }
-
-  // 3. Clarify URLs
-  if (url.hostname === 'www.facebook.com') {
-    if (req.method === 'POST') {
-      // mainly filter /ajax/bz
-      if (req.requestBody.formData) {
-        const options = {
-          hard: true,
-          force: ['fb_dtsg_ag', 'fb_dtsg', 'jazoest'], // experiment
-        };
-
-        if (url.pathname.startsWith('/ajax/bz')) {
-          options.force.push('q', 'ph', 'ts'); // experiment
+  for (const matchedRule of matchedRules) {
+    if (matchedRule.query === '*') {
+      cleanedUrl.search = '';
+    } else {
+      const urlQueries = [...cleanedUrl.searchParams.keys()];
+      for (const q of matchedRule.query) {
+        if (typeof(q) === 'string') {
+          cleanedUrl.searchParams.delete(q);
+        } else {
+          for (const uq of urlQueries) {
+            if (uq.match(q)) {
+              cleanedUrl.searchParams.delete(uq);
+            }
+          }
         }
-
-        if (url.pathname.startsWith('/api/graphql')) {
-          options.force.push('variables', 'fb_api_caller_class', 'fb_api_req_friendly_name', 'doc_id', 'av'); // experiment
-        }
-
-        const { bad, good } = cleanObject(req.requestBody.formData, options);
-        $console.diff(`𝐏𝐎𝐒𝐓 ${decodeURI(getBaseURI(url))}`, bad, good);
-        req.requestBody.formData = good;
       }
     }
+  }
 
-    const IGNORE_FB_PATHES = [
-      '/ajax/pagelet', // subpage reaction
-    ];
+  return cleanedUrl;
+};
 
-    if (IGNORE_FB_PATHES.some((p) => url.pathname.startsWith(p))) {
-      return;
-    }
+function handleRequest(req) {
+  const url = createUrl(req.url);
+  const matchedRules = rules
+    .filter((rule) => !rule.method || rule.method === '*' || rule.method === req.method)
+    .filter((rule) => [].concat(rule.type).includes(req.type))
+    .filter((rule) => {
+      if (rule.host === '*') { return true; }
+      if (typeof(rule.host) === 'string') {return rule.host === url.host;}
+      return rule.host.test(url.host);
+    })
+    .filter((rule) => {
+      if (rule.path === '*') { return true; }
+      if (typeof(rule.path) === 'string') {return rule.path === url.pathname;}
+      return rule.path.test(url.pathname);
+    });
 
-    const cleaned = cleanUrl(url, getBaseURI(url), { hard: true });
+  if (matchedRules.length === 0) { return; }
+  if (matchedRules.some((rule) => rule.action === 'drop')) { return { cancel: true }; }
 
-    if (!areEqualUrls(url.href, cleaned)) {
+  const cleanedUrl = cleanUrl(url);
 
-      const bad = createUrl(url).searchParams;
-      const good = createUrl(cleaned).searchParams;
-
-      $console.diff(`💩 ${decodeURI(getBaseURI(url))}`, bad, good);
-
-      return {
-        redirectUrl: cleaned,
-      };
-    }
-  } else {
-    const cleaned = cleanUrl(url, getBaseURI(url));
-
-    if (!areEqualUrls(url.href, cleaned)) {
-
-      const bad = createUrl(url).searchParams;
-      const good = createUrl(cleaned).searchParams;
-
-      $console.diff(`🛰 ${decodeURI(getBaseURI(url))}`, bad, good);
-
-      return {
-        redirectUrl: cleaned,
-      };
-    }
+  if (!areEqualUrls(url.href, cleanedUrl.href)) {
+    return { redirectUrl: cleanedUrl.href };
   }
 }
 
-chrome.webRequest.onBeforeRequest.addListener(
-  trackStrip,
+
+browser.webRequest.onBeforeRequest.addListener(
+  handleRequest,
   { urls: ['<all_urls>'] },
   ['blocking', 'requestBody'],
 );
 
-chrome.contextMenus.create({
-  title: chrome.i18n.getMessage('CopyCleanedUrl'),
+browser.contextMenus.create({
+  title: browser.i18n.getMessage('CopyCleanedUrl'),
   contexts: ['link'],
 });
 
 // Chrome
 if (navigator.userAgent.includes('Chrome')) {
-  chrome.contextMenus.onClicked.addListener((info) => {
-    let cleaned = null;
+  browser.contextMenus.onClicked.addListener(async(info) => {
     const { linkUrl, pageUrl } = info;
-    if (createUrl(pageUrl).hostname.includes('facebook.com')) {
-      cleaned = cleanUrl(linkUrl, pageUrl, { hard: true });
-    } else {
-      cleaned = cleanUrl(linkUrl, pageUrl);
-    }
+    const cleanedUrl = cleanUrl(linkUrl, pageUrl);
 
-    const bad = createUrl(linkUrl);
-    const good = createUrl(cleaned);
-
-    let msg = '';
-    if (good.origin !== bad.origin) {
-      // redirect
-      $console.log(`📋 ${bad}→${good}`);
-      msg = String(good);
-    } else {
-      const decodedBaseURI = decodeURI(getBaseURI(linkUrl));
-      $console.diff(`📋 ${decodedBaseURI}`, bad, good);
-      const decodedComponents = createUrl(cleaned).protocol.includes('http')
-        ? decodeURIComponent(good.searchParams)
-        : decodeURIComponent(bad.searchParams);
-      msg = decodedComponents ? `${decodedBaseURI}?${decodedComponents}` : decodedBaseURI;
-    }
-
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id, {
-        type: 'clipboard-write',
-        msg,
-      });
+    const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+    browser.tabs.sendMessage(tab.id, {
+      type: 'clipboard-write',
+      msg: cleanedUrl.href,
     });
   });
 }
 // Firefox
 else if (navigator.userAgent.includes('Firefox')) {
-  chrome.contextMenus.onClicked.addListener((info) => {
-    let cleaned = null;
+  browser.contextMenus.onClicked.addListener((info) => {
     const { linkUrl, pageUrl } = info;
-    if (createUrl(info.pageUrl).hostname.includes('facebook.com')) {
-      cleaned = cleanUrl(linkUrl, pageUrl, { hard: true });
-    } else {
-      cleaned = cleanUrl(linkUrl, pageUrl);
-    }
+    const cleanedUrl = cleanUrl(linkUrl, pageUrl);
 
-    const bad = createUrl(linkUrl);
-    const good = createUrl(cleaned);
-
-    const decodedBaseURI = decodeURI(getBaseURI(linkUrl));
-
-    let msg = '';
-    if (good.origin !== bad.origin) {
-      // redirect
-      $console.log(`📋 ${bad}→${good}`);
-      msg = String(good);
-    } else {
-      $console.diff(`📋 ${decodedBaseURI}`, bad.searchParams, good.searchParams);
-      const decodedComponents = createUrl(cleaned).protocol.includes('http')
-        ? decodeURIComponent(good.searchParams)
-        : decodeURIComponent(bad.searchParams);
-      msg = decodedComponents ? `${decodedBaseURI}?${decodedComponents}` : decodedBaseURI;
-    }
-
-    navigator.clipboard.writeText(msg);
+    navigator.clipboard.writeText(cleanedUrl.href);
   });
 }
